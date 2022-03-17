@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">CocktailRecipe</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">Ок</string>
+
+<!--    Nav labels-->
+    <string name="home">Лента</string>
+    <string name="search">Поиск</string>
+    <string name="saved">Сохраненное</string>
+    <string name="settings">Настройки</string>
+
+<!--    Search-->
+    <string name="cocktail_search">Поиск коктеля</string>
+    <string name="by_name">По имени</string>
+    <string name="by_ingredient">По ингредиенту</string>
+    <string name="input_cocktail_name">Введите имя коктеля</string>
+    <string name="input_ingredient_name">Введите ингредиент</string>
+    <string name="cocktail_not_found">Данный коктель не найден.</string>
+    <string name="ingredient_not_found">Ингредиент не найден</string>
+
+<!--    Home-->
+    <string name="main">Главное</string>
+
+<!--    Settings-->
+    <string name="night_mode_support">Ночной режим</string>
+
+<!--    Saved-->
+</resources>

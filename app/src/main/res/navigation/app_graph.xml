@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_graph"
+    app:startDestination="@id/launcherFragment">
+
+    <fragment
+        android:id="@+id/launcherFragment"
+        android:name="com.baza.cocktailrecipe.presentation.module.ui.fragments.LauncherFragment"
+        android:label="LauncherFragment">
+
+        <action
+            android:id="@+id/action_launcherFragment_to_home_navigation"
+            app:destination="@id/home_navigation"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/app_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <include app:graph="@navigation/home_navigation" />
+    <include app:graph="@navigation/navigation_search" />
+    <include app:graph="@navigation/saved_navigation" />
+    <include app:graph="@navigation/settings_navigation" />
+
+</navigation>

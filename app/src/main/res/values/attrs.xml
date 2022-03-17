@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DefaultToolbar">
+        <attr name="toolbarText" format="string"/>
+        <attr name="includeBack" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="PlaceHolderView">
+        <attr name="placeholderText" format="string"/>
+        <attr name="placeholderLottieRaw" format="reference"/>
+    </declare-styleable>
+</resources>
