@@ -1,26 +1,45 @@
 package com.baza.cocktailrecipe.presentation.module.data.entity
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.baza.cocktailrecipe.presentation.module.data.api.*
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Entity(tableName = "Drinks")
 data class DrinkEntity(
-    @SerializedName(ID_DRINK)
-    val idDrink: String?,
+    @PrimaryKey(autoGenerate = true)
+    var idRoomDrink: Int,
+
+    @ColumnInfo(name = "strDrink")
     @SerializedName(STR_DRINK)
-    val strDrink: String?,
+    var strDrink: String?,
+
     @SerializedName(STR_CATEGORY)
-    val strCategory: String?,
+    @ColumnInfo(name = "strCategory")
+    var strCategory: String? ,
+
     @SerializedName(STR_ALCOHOLIC)
-    val strAlcoholic: String?,
+    @ColumnInfo(name = "strAlcoholic")
+    var strAlcoholic: String? = null,
+
+    @ColumnInfo(name = "strGlass")
     @SerializedName(STR_GLASS)
-    val strGlass: String?,
+    var strGlass: String?,
+
+    @ColumnInfo(name = "strInstruction")
     @SerializedName(STR_INSTRUCTION)
-    val strInstruction: String?,
+    var strInstruction: String?,
+
+    @ColumnInfo(name = "strDrinkThumb")
     @SerializedName(STR_DRINK_THUMB)
-    val strDrinkThumb: String?,
+    var strDrinkThumb: String?,
+
+    @ColumnInfo(name = "strVideo")
     @SerializedName(STR_VIDEO)
-    val strVideo: String?
-) : Parcelable
+    var strVideo: String?
+) : Parcelable {
+}

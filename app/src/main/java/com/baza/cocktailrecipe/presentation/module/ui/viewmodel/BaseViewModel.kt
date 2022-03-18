@@ -7,5 +7,4 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 abstract class BaseViewModel : ViewModel() {
-
 }

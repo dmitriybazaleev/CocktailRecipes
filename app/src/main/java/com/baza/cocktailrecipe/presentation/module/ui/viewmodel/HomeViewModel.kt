@@ -85,7 +85,7 @@ class HomeViewModel : BaseViewModel() {
     private fun updateUiAsync() {
         _homeLiveData.postValue(mHomeState)
     }
-    
+
 
     val homeEvent: SharedFlow<HomeEvent>
         get() = _mHomeEvent.asSharedFlow()

@@ -28,14 +28,5 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     private fun initViewPager() {
         binding?.vpSearch?.adapter = SearchAdapter(this)
-        TabLayoutMediator(
-            binding?.tlSearch ?: return,
-            binding?.vpSearch ?: return
-        ) { tab, position ->
-            when (position) {
-                0 -> tab.setText(R.string.by_name)
-                1 -> tab.setText(R.string.by_ingredient)
-            }
-        }.attach()
     }
 }

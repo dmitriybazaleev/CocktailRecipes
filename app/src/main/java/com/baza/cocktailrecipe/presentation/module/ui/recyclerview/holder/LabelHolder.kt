@@ -10,14 +10,14 @@ import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.module.ui.dp
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LabelUiEntity
 
-class SearchResultHolder constructor(
+class LabelHolder constructor(
     private val itemText: TextView
 ) : RecyclerView.ViewHolder(itemText) {
 
     companion object {
 
         @JvmStatic
-        fun create(viewGroup: ViewGroup): SearchResultHolder {
+        fun create(viewGroup: ViewGroup): LabelHolder {
             val labelText = TextView(viewGroup.context)
             val lp = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -33,7 +33,7 @@ class SearchResultHolder constructor(
             )
             labelText.textSize = 16f
 
-            return SearchResultHolder(labelText)
+            return LabelHolder(labelText)
         }
     }
 

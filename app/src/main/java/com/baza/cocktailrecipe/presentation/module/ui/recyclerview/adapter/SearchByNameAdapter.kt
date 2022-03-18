@@ -1,41 +1,66 @@
 package com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter
 
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
+import com.baza.cocktailrecipe.presentation.module.ui.dp
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LabelUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchHolder
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchResultHolder
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.LabelHolder
+import com.baza.cocktailrecipe.presentation.module.ui.sp
 import java.lang.IllegalStateException
 
-fun List<DrinkEntity>.mapSearchEntity(): List<SearchUiEntity> {
+fun List<DrinkEntity>.toViewType(
+    labelStr: String,
+    includeSwipe: Boolean
+): MutableList<SearchUiEntity> {
     val newList = mutableListOf<SearchUiEntity>()
-    newList.add(LabelUiEntity("Результат поиска"))
+    newList.add(LabelUiEntity(labelStr))
 
     if (this.isNotEmpty()) {
         this.forEach { dataEntity ->
             newList.add(
                 DrinkUiEntitySearch(
-                    idDrink = dataEntity.idDrink,
+                    idDrink = dataEntity.idRoomDrink,
                     strDrink = dataEntity.strDrink,
                     strCategory = dataEntity.strCategory,
                     strAlcoholic = dataEntity.strAlcoholic,
                     strGlass = dataEntity.strGlass,
                     strInstruction = dataEntity.strInstruction,
                     strDrinkThumb = dataEntity.strDrinkThumb,
-                    strVideo = dataEntity.strVideo
+                    strVideo = dataEntity.strVideo,
+                    includeSwipe = includeSwipe
                 )
             )
         }
     }
 
     return newList
+}
+
+fun DrinkUiEntitySearch.toDrinkEntity(): DrinkEntity {
+    return DrinkEntity(
+        idRoomDrink = idDrink ?: 0,
+        strDrink = strDrink,
+        strCategory = strCategory,
+        strAlcoholic = strAlcoholic,
+        strGlass = strGlass,
+        strInstruction = strInstruction,
+        strDrinkThumb = strDrinkThumb,
+        strVideo = strVideo
+    )
 }
 
 private fun SearchUiEntity.compare(newItem: SearchUiEntity): Boolean {
@@ -56,7 +81,7 @@ private fun SearchUiEntity.compare(newItem: SearchUiEntity): Boolean {
 }
 
 class SearchByNameAdapter constructor(
-    private val itemObserver: SearchHolder.ItemObserver? = null
+    private val itemObserver: SearchHolder.ItemObserver? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val searchDiffCallback = object : DiffUtil.ItemCallback<SearchUiEntity>() {
@@ -76,13 +101,105 @@ class SearchByNameAdapter constructor(
 
     }
 
-    fun updateList(searchResult: List<SearchUiEntity>) =
-        mSearchAsyncDiffer.submitList(searchResult)
+    private fun getItemTouchCallback(
+        callback: ((item: DrinkUiEntitySearch, holder: RecyclerView.ViewHolder) -> Unit)? = null
+    ): ItemTouchHelper.SimpleCallback {
+
+        return object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                if (viewHolder is LabelHolder) return 0
+                if (viewHolder is SearchHolder) {
+                    try {
+                        val itemEntity =
+                            mSearchAsyncDiffer.currentList[viewHolder.adapterPosition] as? DrinkUiEntitySearch
+
+                        if (itemEntity?.includeSwipe == false) {
+                            return 0
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                return super.getMovementFlags(recyclerView, viewHolder)
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (viewHolder is SearchHolder) {
+                    callback?.invoke(
+                        mSearchAsyncDiffer.currentList[viewHolder.adapterPosition] as DrinkUiEntitySearch,
+                        viewHolder
+                    )
+                }
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val item = viewHolder.itemView
+                    val mColorDrawable = ColorDrawable(Color.RED)
+                    mColorDrawable.setBounds(
+                        item.left,
+                        item.top, item.right, item.bottom
+                    )
+                    mColorDrawable.draw(c)
+
+                    val x = (item.right - 60.dp).toFloat()
+                    val y = (item.top + item.height / 1.8).toFloat()
+                    c.drawText(
+                        "Удалить",
+                        x,
+                        y,
+                        getDefaultPaintStyle()
+                    )
+                }
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        }
+    }
+
+    private fun getDefaultPaintStyle(): Paint {
+        val paint = Paint()
+        paint.color = Color.WHITE
+        paint.typeface = Typeface.create("san-serif-medium", Typeface.NORMAL)
+        paint.textSize = 14.sp.toFloat()
+
+        return paint
+    }
 
     private val mSearchAsyncDiffer: AsyncListDiffer<SearchUiEntity> =
         AsyncListDiffer(this, searchDiffCallback)
+    private var mItemTouchHelper: ItemTouchHelper? = null
 
-    fun getCurrentList() = mSearchAsyncDiffer.currentList
 
     override fun getItemViewType(position: Int): Int =
         mSearchAsyncDiffer.currentList[position].getViewType().ordinal
@@ -96,7 +213,7 @@ class SearchByNameAdapter constructor(
                 SearchHolder(v, itemObserver)
             }
             SearchViewType.SEARCH_TEXT_TYPE.ordinal -> {
-                SearchResultHolder.create(parent)
+                LabelHolder.create(parent)
             }
 
             else -> throw IllegalStateException("Unknown view type!")
@@ -108,7 +225,7 @@ class SearchByNameAdapter constructor(
             is SearchHolder -> {
                 holder.bind(mSearchAsyncDiffer.currentList[position] as DrinkUiEntitySearch)
             }
-            is SearchResultHolder -> {
+            is LabelHolder -> {
                 holder.bind(mSearchAsyncDiffer.currentList[position] as LabelUiEntity)
             }
         }
@@ -116,6 +233,18 @@ class SearchByNameAdapter constructor(
 
     override fun getItemCount(): Int = mSearchAsyncDiffer.currentList.size
 
+    fun attachItemTouch(
+        recyclerView: RecyclerView?,
+        itemCallback: ((item: DrinkUiEntitySearch, holder: RecyclerView.ViewHolder) -> Unit)? = null,
+    ) {
+        if (mItemTouchHelper == null) {
+            mItemTouchHelper = ItemTouchHelper(getItemTouchCallback(itemCallback))
+            mItemTouchHelper?.attachToRecyclerView(recyclerView)
+        }
+    }
+
+    fun updateList(searchResult: List<SearchUiEntity>) =
+        mSearchAsyncDiffer.submitList(searchResult)
 
     enum class SearchViewType {
         /**

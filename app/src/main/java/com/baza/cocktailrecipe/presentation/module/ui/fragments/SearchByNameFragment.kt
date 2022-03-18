@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentSearchByNameBinding
+import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
+import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchHolder
@@ -49,7 +52,23 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     private fun addEventObserver() {
         viewModel.searchEvent
             .onEach { event ->
-
+                when (event) {
+                    is SearchEvent.DialogEvent -> {
+                        ActionDialog.Builder(requireContext(), childFragmentManager)
+                            .setLabel(event.titleRes)
+                            .setMessage(event.messageRes)
+                            .setNegativeButton(
+                                event.negativeButtonTextRes,
+                                event.negativeButtonAction
+                            )
+                            .setIcon(R.drawable.icn_error)
+                            .setPositiveButton(
+                                event.positiveButtonTextRes,
+                                event.positiveButtonAction
+                            )
+                            .show()
+                    }
+                }
             }
             .launchIn(lifecycleScope)
     }
@@ -57,6 +76,10 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
 
     private fun setUpRecycler() {
         binding?.rvSearchByName?.adapter = mSearchAdapter
+
+        mSearchAdapter.attachItemTouch(binding?.rvSearchByName) { item, holder ->
+            viewModel.onRemoveItem(item, holder.adapterPosition)
+        }
     }
 
     private fun addStateObserver() {
@@ -91,7 +114,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
                         viewModel.onStartSearch(inputNotNull.toString())
 
                     } else {
-                        viewModel.onClearCurrentList()
+                        viewModel.getSavedCocktails()
                     }
                 }
             }
@@ -110,7 +133,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     }
 
     override fun onItemClicked(item: DrinkUiEntitySearch) {
-        // TODO: 12.03.2022 Replace with your own action!
         Log.d(SearchByNameViewModel.TAG, "item clicked!")
+        viewModel.onInsertClickedCocktails(item)
     }
 }

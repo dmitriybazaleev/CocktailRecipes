@@ -3,13 +3,19 @@
     <string name="cancel">Отмена</string>
     <string name="ok">Ок</string>
 
-<!--    Nav labels-->
+    <!--    Response-->
+    <string name="error">Ошибка</string>
+    <string name="check_internet_connection">Проверьте подключение.</string>
+    <string name="something_went_wrong">Упс! Что-то пошло не так. Попробуйте попытку в другой раз.</string>
+    <string name="network_error">Ошибка сервера.</string>
+
+    <!--    Nav labels-->
     <string name="home">Лента</string>
     <string name="search">Поиск</string>
     <string name="saved">Сохраненное</string>
     <string name="settings">Настройки</string>
 
-<!--    Search-->
+    <!--    Search-->
     <string name="cocktail_search">Поиск коктеля</string>
     <string name="by_name">По имени</string>
     <string name="by_ingredient">По ингредиенту</string>
@@ -18,11 +24,11 @@
     <string name="cocktail_not_found">Данный коктель не найден.</string>
     <string name="ingredient_not_found">Ингредиент не найден</string>
 
-<!--    Home-->
+    <!--    Home-->
     <string name="main">Главное</string>
 
-<!--    Settings-->
+    <!--    Settings-->
     <string name="night_mode_support">Ночной режим</string>
 
-<!--    Saved-->
+    <!--    Saved-->
 </resources>

@@ -6,14 +6,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DrinkUiEntitySearch(
-    val idDrink: String?,
+    val idDrink: Int?,
     val strDrink: String?,
     val strCategory: String?,
     val strAlcoholic: String?,
     val strGlass: String?,
     val strInstruction: String?,
     val strDrinkThumb: String?,
-    val strVideo: String?
+    val strVideo: String?,
+    val includeSwipe: Boolean
 ) : Parcelable, SearchUiEntity {
     override fun getViewType(): SearchByNameAdapter.SearchViewType =
         SearchByNameAdapter.SearchViewType.SEARCH_RESULT_TYPE

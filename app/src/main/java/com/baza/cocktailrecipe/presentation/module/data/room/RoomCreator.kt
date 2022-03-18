@@ -2,11 +2,11 @@ package com.baza.cocktailrecipe.presentation.module.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkDatabaseEntity
+import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientDbEntity
 
 @Database(
-    entities = [DrinkDatabaseEntity::class, IngredientDbEntity::class],
+    entities = [DrinkEntity::class, IngredientDbEntity::class],
     version = 1,
     exportSchema = false
 )

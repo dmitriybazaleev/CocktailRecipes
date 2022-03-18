@@ -60,7 +60,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
                         ActionDialog.Builder(requireContext(), childFragmentManager)
                             .setLabel(event.title)
                             .setMessage(event.message)
-                            .setNegativeButton("Ok")
+                            .setNegativeButton(R.string.ok)
                             .setIcon(R.drawable.icn_error)
                             .show()
                     }
