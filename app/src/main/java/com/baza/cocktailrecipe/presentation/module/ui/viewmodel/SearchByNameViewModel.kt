@@ -60,7 +60,7 @@ class SearchByNameViewModel : ViewModel() {
 
 
     /**
-     * Данный метод ищет все подходящее коктели
+     * Данный метод ищет все подходящее коктейли
      */
     fun onStartSearch(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -200,7 +200,7 @@ class SearchByNameViewModel : ViewModel() {
     }
 
     /**
-     * Данный метод удаляет item по имени коктеля
+     * Данный метод удаляет item по имени коктейля
      * Вызывается тогда, когда происходит свайп
      */
     fun onRemoveItem(item: DrinkUiEntitySearch, position: Int) {

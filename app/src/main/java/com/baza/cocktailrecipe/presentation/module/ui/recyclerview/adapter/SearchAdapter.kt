@@ -10,7 +10,7 @@ class SearchAdapter constructor(
 ) : FragmentStateAdapter(fragment) {
 
     companion object {
-        const val MAX_FRAGMENTS = 1
+        const val MAX_FRAGMENTS = 2
 
     }
 
@@ -21,6 +21,9 @@ class SearchAdapter constructor(
             0 -> {
                 SearchByNameFragment.create()
             }
+
+            1 ->
+                SearchByNameFragment.create()
 
             else -> throw IllegalStateException("Unknown position")
         }

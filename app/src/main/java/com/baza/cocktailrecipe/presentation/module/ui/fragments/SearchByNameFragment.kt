@@ -73,7 +73,6 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
             .launchIn(lifecycleScope)
     }
 
-
     private fun setUpRecycler() {
         binding?.rvSearchByName?.adapter = mSearchAdapter
 
