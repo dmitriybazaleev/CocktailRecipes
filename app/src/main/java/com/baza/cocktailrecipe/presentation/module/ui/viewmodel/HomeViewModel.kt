@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.baza.cocktailrecipe.presentation.base.App
+import com.baza.cocktailrecipe.presentation.module.data.api.DRINKS
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
@@ -43,15 +44,15 @@ class HomeViewModel : BaseViewModel() {
                     val type = object : TypeToken<List<DrinkEntity>>() {}.type
                     val requestsList = Gson()
                         .fromJson<List<DrinkEntity>>(
-                            entity.getAsJsonArray("drinks"),
+                            entity.getAsJsonArray(DRINKS),
                             type
                         )
                     mHomeState.randomCocktail = requestsList
                     Log.d(TAG, "random result: $requestsList")
                     updateUiAsync()
 
-                }, error = { e ->
-                    viewModelScope.launch(Dispatchers.Main) {
+                }, onError = { e ->
+                    withContext(Dispatchers.Main) {
                         onHandleError(e)
                     }
                 }

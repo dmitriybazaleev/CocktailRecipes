@@ -8,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
 import com.baza.cocktailrecipe.presentation.module.ui.MainActivity
+import com.baza.cocktailrecipe.presentation.navigation.NavArguments
 
 abstract class BaseFragment<B : ViewBinding> : Fragment() {
 
@@ -99,6 +102,40 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
     } ?: run {
         Log.d(TAG, "toast message is null")
     }
+
+    fun addFragment(destinationId: Int) = act?.navigator?.addFragment(destinationId)
+
+    fun addFragment(destinationId: Int, vararg navArguments: NavArguments) =
+        act?.navigator?.addFragment(destinationId, *navArguments)
+
+    fun addFragment(
+        destinationId: Int,
+        @AnimRes enterAnim: Int,
+        @AnimRes exitAnim: Int,
+        @AnimRes popEnterAnim: Int,
+        @AnimRes popExitAnim: Int
+    ) = act?.navigator?.addFragment(destinationId, enterAnim, exitAnim, popEnterAnim, popExitAnim)
+
+    fun addFragment(
+        destinationId: Int,
+        @AnimRes enterAnim: Int,
+        @AnimRes exitAnim: Int,
+        @AnimRes popEnterAnim: Int,
+        @AnimRes popExitAnim: Int,
+        vararg argument: NavArguments
+    ) = act?.navigator?.addFragment(
+        destinationId,
+        enterAnim,
+        exitAnim,
+        popEnterAnim,
+        popExitAnim,
+        *argument
+    )
+
+    fun getController(): NavController? = act?.navigator?.getController()
+
+
+    fun popBackstack() = act?.navigator?.popBackStack()
 
     abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> B
 }

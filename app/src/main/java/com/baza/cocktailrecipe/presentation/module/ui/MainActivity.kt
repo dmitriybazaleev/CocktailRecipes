@@ -11,6 +11,14 @@ import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.ActivityMainBinding
 import com.baza.cocktailrecipe.presentation.navigation.attachController
 
+/**
+ * Тестовое приложение, которое представляет функционал:
+ * 1 - Поиск коктейлей по имени
+ * 2 - Лента, которая показывает список рандомных коктейлей
+ * 3 - Приложение поддерживает ночной режим
+ * Стек, который используется в проекте: MVVM, Kotlin coroutines, Room, Navigation Component,
+ * Retrofit, Glide
+ */
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

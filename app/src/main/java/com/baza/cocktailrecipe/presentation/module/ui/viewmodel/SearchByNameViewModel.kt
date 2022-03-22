@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import java.lang.Exception
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -180,30 +179,31 @@ class SearchByNameViewModel : ViewModel() {
 
     fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val drinkEntity = clickedItem.toDrinkEntity()
-                searchByNameUseCase.onInsertDrink(drinkEntity)
-
-                withContext(Dispatchers.Main) {
-                    _mSearchEvent.emit(
-                        SearchEvent.ShowCocktailEvent(
-                            drinkEntity
+            val drinkEntity = clickedItem.toDrinkEntity()
+            searchByNameUseCase.onInsertDrink(
+                drinkEntity,
+                onSuccess = {
+                    withContext(Dispatchers.Main) {
+                        _mSearchEvent.emit(
+                            SearchEvent.ShowCocktailEvent(
+                                drinkEntity
+                            )
                         )
-                    )
-                }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _mSearchEvent.emit(
-                        SearchEvent.DialogEvent(
-                            titleRes = R.string.error,
-                            messageRes = R.string.something_went_wrong,
-                            negativeButtonTextRes = R.string.ok
+                    }
+                },
+                onError = { e ->
+                    withContext(Dispatchers.Main) {
+                        _mSearchEvent.emit(
+                            SearchEvent.DialogEvent(
+                                titleRes = R.string.error,
+                                messageRes = R.string.something_went_wrong,
+                                negativeButtonTextRes = R.string.ok
+                            )
                         )
-                    )
+                    }
+                    e.printStackTrace()
                 }
-                e.printStackTrace()
-            }
+            )
         }
     }
 
@@ -218,32 +218,34 @@ class SearchByNameViewModel : ViewModel() {
     fun onRemoveItem(item: DrinkUiEntitySearch, position: Int) {
         Log.d(TAG, "swiped position: $position Model swiped: $item")
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                item.idDrink?.let { drink ->
-                    searchByNameUseCase.onRemoveDrink(drink)
-                    val newList = mutableListOf<SearchUiEntity>()
-                    newList.addAll(mState.searchResult)
-                    newList.remove(item)
-                    if (newList.size == 1) {
-                        resetCurrentList()
+            item.idDrink?.let { drink ->
+                searchByNameUseCase.onRemoveDrink(
+                    drink,
+                    onSuccess = {
+                        val newList = mutableListOf<SearchUiEntity>()
+                        newList.addAll(mState.searchResult)
+                        newList.remove(item)
+                        if (newList.size == 1) {
+                            resetCurrentList()
 
-                    } else {
-                        mState.searchResult = newList
+                        } else {
+                            mState.searchResult = newList
+                        }
+                        updateUiAsync()
+                    },
+                    onError = { e ->
+                        withContext(Dispatchers.Main) {
+                            _mSearchEvent.emit(
+                                SearchEvent.DialogEvent(
+                                    titleRes = R.string.error,
+                                    messageRes = R.string.something_went_wrong,
+                                    negativeButtonTextRes = R.string.ok
+                                )
+                            )
+                        }
+                        e.printStackTrace()
                     }
-                    updateUiAsync()
-                }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _mSearchEvent.emit(
-                        SearchEvent.DialogEvent(
-                            titleRes = R.string.error,
-                            messageRes = R.string.something_went_wrong,
-                            negativeButtonTextRes = R.string.ok
-                        )
-                    )
-                }
-                e.printStackTrace()
+                )
             }
         }
     }

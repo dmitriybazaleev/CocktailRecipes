@@ -24,11 +24,20 @@ class SearchByNameUseCase @Inject constructor(
         }
     }
 
-    suspend fun onInsertDrink(entity: DrinkEntity) =
-        mDao.insertDrink(entity)
+    suspend fun onInsertDrink(
+        entity: DrinkEntity,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (e: java.lang.Exception) -> Unit
+    ) {
+        try {
+            mDao.insertDrink(entity)
 
-    suspend fun getSavedDrinks(): List<DrinkEntity> =
-        mDao.getAllDrinks()
+            onSuccess.invoke()
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
 
     suspend fun getSavedDrinks(
         onSuccess: suspend (response: List<DrinkEntity>) -> Unit,
@@ -43,6 +52,17 @@ class SearchByNameUseCase @Inject constructor(
     }
 
     suspend fun onRemoveDrink(
-        drinkId: Int
-    ) = mDao.removeDrink(drinkId)
+        drinkId: Int,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            mDao.removeDrink(drinkId)
+
+            onSuccess.invoke()
+
+        } catch (e: java.lang.Exception) {
+            onError.invoke(e)
+        }
+    }
 }

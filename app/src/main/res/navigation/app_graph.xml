@@ -12,7 +12,11 @@
         <action
             android:id="@+id/action_launcherFragment_to_home_navigation"
             app:destination="@id/home_navigation"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
             app:launchSingleTop="true"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"
             app:popUpTo="@+id/app_graph"
             app:popUpToInclusive="true" />
     </fragment>

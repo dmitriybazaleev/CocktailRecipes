@@ -11,14 +11,14 @@ class HomeUseCase @Inject constructor(
 ) {
 
     suspend fun getRandomCocktail(
-        success: (JsonObject) -> Unit,
-        error: (Exception) -> Unit
+        success: suspend (JsonObject) -> Unit,
+        onError: suspend (e: Exception) -> Unit
     ) {
         try {
             success.invoke(api.randomCocktail())
 
         } catch (e: Exception) {
-            error.invoke(e)
+            onError.invoke(e)
         }
     }
 }
