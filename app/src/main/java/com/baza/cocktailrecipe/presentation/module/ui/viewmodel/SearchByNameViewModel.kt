@@ -41,8 +41,6 @@ class SearchByNameViewModel : ViewModel() {
 
     private val _mSearchEvent = MutableSharedFlow<SearchEvent>()
 
-//    var isCocktailSaved = false
-
     val searchEvent: SharedFlow<SearchEvent>
         get() = _mSearchEvent.asSharedFlow()
 
@@ -67,32 +65,33 @@ class SearchByNameViewModel : ViewModel() {
             setProgressState(true)
             setPlaceholderState(false)
             updateUiAsync()
-            try {
-                val json = searchByNameUseCase.onSearchCocktail(query)
+            searchByNameUseCase.onSearchCocktail(
+                name = query,
+                onSuccess = { response ->
+                    if (!response.get(DRINKS).isJsonNull) {
+                        val type = object : TypeToken<List<DrinkEntity>>() {}.type
+                        val responseEntity: List<DrinkEntity> = Gson().fromJson(
+                            response.getAsJsonArray(DRINKS), type
+                        )
+                        Log.d(TAG, "response entity: $response")
+                        onHandleResponse(responseEntity)
 
-                if (!json.get(DRINKS).isJsonNull) {
-                    val type = object : TypeToken<List<DrinkEntity>>() {}.type
-                    val response: List<DrinkEntity> = Gson().fromJson(
-                        json.getAsJsonArray(DRINKS), type
-                    )
-                    Log.d(TAG, "response entity: $response")
-                    onHandleResponse(response)
-
-                } else {
-                    Log.d(TAG, "nothing has been found")
-                    resetCurrentList()
-                    setPlaceholderState(true)
+                    } else {
+                        Log.d(TAG, "nothing has been found")
+                        resetCurrentList()
+                        setPlaceholderState(true)
+                        updateUiAsync()
+                    }
+                },
+                onError = { e ->
+                    setProgressState(false)
                     updateUiAsync()
-                }
 
-            } catch (e: Exception) {
-                setProgressState(false)
-                updateUiAsync()
-
-                withContext(Dispatchers.Main) {
-                    onHandleException(e)
+                    withContext(Dispatchers.Main) {
+                        onHandleException(e)
+                    }
                 }
-            }
+            )
         }
     }
 
@@ -131,23 +130,27 @@ class SearchByNameViewModel : ViewModel() {
     fun getSavedCocktails() {
         onClearCurrentList()
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val cacheDrinks = searchByNameUseCase.getSavedDrinks()
-                Log.d(TAG, "saved drinks: $cacheDrinks")
-                if (cacheDrinks.isNotEmpty()) {
-                    mState.searchResult = cacheDrinks.toViewType("История поиска", true)
+            searchByNameUseCase.getSavedDrinks(
+                onSuccess = { response ->
+                    Log.d(TAG, "saved drinks: $response")
+                    if (response.isNotEmpty()) {
+                        mState.searchResult = response.toViewType(
+                            "История поиска",
+                            true
+                        )
 
-                    withContext(Dispatchers.Main) {
-                        updateUi()
+                        withContext(Dispatchers.Main) {
+                            updateUi()
+                        }
+
+                    } else {
+                        Log.d(TAG, "Nothing has been found inside db!")
                     }
-
-                } else {
-                    Log.d(TAG, "Nothing has been found inside db!")
+                },
+                onError = { e ->
+                    e.printStackTrace()
                 }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            )
         }
     }
 
@@ -178,7 +181,16 @@ class SearchByNameViewModel : ViewModel() {
     fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                searchByNameUseCase.onInsertDrink(clickedItem.toDrinkEntity())
+                val drinkEntity = clickedItem.toDrinkEntity()
+                searchByNameUseCase.onInsertDrink(drinkEntity)
+
+                withContext(Dispatchers.Main) {
+                    _mSearchEvent.emit(
+                        SearchEvent.ShowCocktailEvent(
+                            drinkEntity
+                        )
+                    )
+                }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -235,7 +247,6 @@ class SearchByNameViewModel : ViewModel() {
             }
         }
     }
-
 
     /**
      * Обновляет LiveData в главном потоке

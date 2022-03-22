@@ -31,4 +31,8 @@
     <string name="night_mode_support">Ночной режим</string>
 
     <!--    Saved-->
+
+<!--    Full Cocktail info-->
+    <string name="details">Информация о коктейле</string>
+    <string name="save">Сохранить</string>
 </resources>

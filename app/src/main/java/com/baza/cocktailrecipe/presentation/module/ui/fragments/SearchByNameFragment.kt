@@ -1,7 +1,6 @@
 package com.baza.cocktailrecipe.presentation.module.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentSearchByNameBinding
+import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
+import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchHolder
 import com.baza.cocktailrecipe.presentation.module.ui.textChanges
@@ -67,6 +69,12 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
                                 event.positiveButtonAction
                             )
                             .show()
+                    }
+                    is SearchEvent.ShowCocktailEvent -> {
+                        showCocktailInfoDialog(entity = event.selectedEntity)
+                    }
+                    is SearchEvent.RestorePositionEvent -> {
+                        // TODO: 20.03.2022 Пока ничего не делаем!
                     }
                 }
             }
@@ -126,13 +134,31 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
         }
     }
 
+    private fun showCocktailInfoDialog(
+        entity: DrinkEntity,
+    ) {
+        val dialog = FullCocktailInfoDialog.create(entity)
+        dialog.show(childFragmentManager, FullCocktailInfoDialog.TAG)
+    }
+
     override fun onStop() {
         super.onStop()
         mJob?.cancel()
     }
 
     override fun onItemClicked(item: DrinkUiEntitySearch) {
-        Log.d(SearchByNameViewModel.TAG, "item clicked!")
-        viewModel.onInsertClickedCocktails(item)
+        if (item.includeSwipe) {
+            /**
+             * Текущие данные, которые показывает список из Room
+             */
+            showCocktailInfoDialog(item.toDrinkEntity())
+
+        } else {
+            /**
+             * Текущее данные, которые показывает список из сервера
+             * Кэшируем данные в базу
+             */
+            viewModel.onInsertClickedCocktails(item)
+        }
     }
 }

@@ -13,13 +13,34 @@ class SearchByNameUseCase @Inject constructor(
 
     suspend fun onSearchCocktail(
         name: String,
-    ): JsonObject = mApi.searchByName(name)
+        onSuccess: suspend (response: JsonObject) -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            onSuccess.invoke(mApi.searchByName(name))
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
 
     suspend fun onInsertDrink(entity: DrinkEntity) =
         mDao.insertDrink(entity)
 
     suspend fun getSavedDrinks(): List<DrinkEntity> =
         mDao.getAllDrinks()
+
+    suspend fun getSavedDrinks(
+        onSuccess: suspend (response: List<DrinkEntity>) -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            onSuccess.invoke(mDao.getAllDrinks())
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
 
     suspend fun onRemoveDrink(
         drinkId: Int

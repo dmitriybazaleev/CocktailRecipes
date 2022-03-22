@@ -1,16 +1,16 @@
 package com.baza.cocktailrecipe.presentation.module.ui
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 fun View.visible() {
     if (this.visibility != View.VISIBLE) {
@@ -91,3 +91,22 @@ val Int.sp: Int
         this.toFloat(),
         Resources.getSystem().displayMetrics
     ).toInt()
+
+fun BottomSheetBehavior<*>.registerBottomSheetCallback(
+    stateChanged: ((state: Int) -> Unit)? = null,
+    onSlideChanged: ((slideOffset: Float) -> Unit)? = null
+) {
+    addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            stateChanged?.invoke(newState)
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            onSlideChanged?.invoke(slideOffset)
+        }
+
+    })
+}
+
+fun Context.width() = this.resources?.displayMetrics?.widthPixels
+fun Context.height() = this.resources?.displayMetrics?.heightPixels

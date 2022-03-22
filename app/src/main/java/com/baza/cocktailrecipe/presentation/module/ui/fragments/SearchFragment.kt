@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentSearchBinding
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchAdapter
@@ -29,7 +28,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
     private fun initViewPager() {
         binding?.vpSearch?.adapter = SearchAdapter(this)
         TabLayoutMediator(
-            binding?.tlSearch ?: return,
+            binding?.tlSearch ?:return,
             binding?.vpSearch ?: return
         ) { tab, position ->
             when (position) {
