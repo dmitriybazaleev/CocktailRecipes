@@ -16,7 +16,7 @@ import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchHolder
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder
 import com.baza.cocktailrecipe.presentation.module.ui.textChanges
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SearchByNameViewModel
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SearchViewModel
@@ -24,7 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 
 class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
-    SearchHolder.ItemObserver {
+    SearchCocktailHolder.ItemObserver {
 
     private val rootViewModel by viewModels<SearchViewModel>(
         ownerProducer = { requireParentFragment() }

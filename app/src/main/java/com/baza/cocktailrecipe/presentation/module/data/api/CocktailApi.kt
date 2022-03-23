@@ -13,11 +13,11 @@ interface CocktailApi {
 
     // Search cocktail by name
     @GET(SEARCH_METHOD)
-    suspend fun searchByName(@Query("s") name: String) : JsonObject
+    suspend fun searchByName(@Query("s") name: String): JsonObject
 
     // List all cocktails by first letter
     @GET(SEARCH_METHOD)
-    suspend fun searchByFirstLetter(@Query("f") letter: String)
+    suspend fun searchByFirstLetter(@Query("f") letter: String): JsonObject
 
     // Search ingredient by name
     @GET(SEARCH_METHOD)

@@ -9,7 +9,7 @@ import com.baza.cocktailrecipe.presentation.module.ui.loadCircleImage
 import com.baza.cocktailrecipe.presentation.module.ui.loadGlide
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 
-class SearchHolder constructor(
+class SearchCocktailHolder constructor(
     itemView: View,
     private val itemObserver: ItemObserver? = null
 ) : RecyclerView.ViewHolder(itemView) {

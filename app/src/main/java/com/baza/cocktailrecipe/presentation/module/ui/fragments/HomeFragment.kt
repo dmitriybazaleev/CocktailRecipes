@@ -24,7 +24,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
 
     private val viewModel by viewModels<HomeViewModel>()
 
-    private val mAdapter = HomeAdapter()
+    private var mAdapter: HomeAdapter? = null
     private var eventJob: Job? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeBinding
@@ -35,6 +35,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
         addStateObserver()
         observeEvent()
         addListeners()
+        initRecycler()
+    }
+
+    private fun initRecycler() {
+        mAdapter = HomeAdapter(lifecycleOwner = viewLifecycleOwner)
+        binding?.rvHome?.adapter = mAdapter
     }
 
     private fun addListeners() {
@@ -45,6 +51,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
         viewModel.homeLiveData.observe(viewLifecycleOwner) { state ->
             updateProgressState(state.isShowProgress)
             updateSwipeState(state.isRefreshing)
+            mAdapter?.updateList(state.cocktailsList)
         }
     }
 
@@ -74,6 +81,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
     }
 
     override fun onRefresh() {
-        viewModel.setSwipeState(false)
     }
 }

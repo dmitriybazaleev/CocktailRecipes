@@ -15,6 +15,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb_home" />
 
+    <com.baza.cocktailrecipe.presentation.widget.PlaceHolderView
+        android:id="@+id/phv_home"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tb_home"
+        app:placeholderLottieRaw="@raw/lottie_connection_lost"
+        app:placeholderText="@string/check_internet_connection" />
+
     <com.baza.cocktailrecipe.presentation.widget.DefaultToolbar
         android:id="@+id/tb_home"
         android:layout_width="match_parent"
@@ -25,7 +37,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:toolbarText="@string/main" />
 
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/sl_home"
         android:layout_width="0dp"
@@ -35,13 +46,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb_home">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

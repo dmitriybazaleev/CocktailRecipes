@@ -10,13 +10,13 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.TAG
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toBlurViewType
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRandomDrink
 import com.baza.cocktailrecipe.presentation.module.ui.state.HomeState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -34,36 +34,55 @@ class HomeViewModel : BaseViewModel() {
 
     init {
         App.appComponent?.inject(this)
-        getRandomCocktail()
+        getCocktails()
     }
 
-    private fun getRandomCocktail() {
+
+    private fun getCocktails() {
         viewModelScope.launch(Dispatchers.IO) {
-            homeUseCase.getRandomCocktail(
-                success = { entity ->
-                    val type = object : TypeToken<List<DrinkEntity>>() {}.type
-                    val requestsList = Gson()
-                        .fromJson<List<DrinkEntity>>(
-                            entity.getAsJsonArray(DRINKS),
-                            type
-                        )
-                    mHomeState.randomCocktail = requestsList
-                    Log.d(TAG, "random result: $requestsList")
+            try {
+                val randomList = homeUseCase.getRandomCocktail()
+                val byLetterList = homeUseCase.getCocktailsByLetter(mGeneratedStr)
+
+
+                if (!randomList.isJsonNull && !byLetterList.isJsonNull) {
+                    val randomCocktailList = Gson().fromJson<List<DrinkEntity>>(
+                        randomList.getAsJsonArray(DRINKS),
+                        object : TypeToken<List<DrinkEntity>>() {}.type
+                    ).toBlurViewType()
+
+                    val cocktailByLetter = Gson().fromJson<List<DrinkEntity>>(
+                        byLetterList.getAsJsonArray(DRINKS),
+                        object : TypeToken<List<DrinkEntity>>() {}.type
+                    ).toRandomDrink()
+                    mHomeState.cocktailsList.addAll(randomCocktailList)
+                    mHomeState.cocktailsList.addAll(cocktailByLetter)
+                    Log.d(
+                        TAG,
+                        "random list: $randomCocktailList, " +
+                                "cocktails list: $cocktailByLetter"
+                    )
+
                     updateUiAsync()
 
-                }, onError = { e ->
-                    withContext(Dispatchers.Main) {
-                        onHandleError(e)
-                    }
+                } else {
+                    Log.d(TAG, "")
                 }
-            )
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    onHandleError(e)
+                }
+            }
         }
     }
 
     private suspend fun onHandleError(e: Exception) {
         when (e) {
             is HttpException -> {
-
+                Log.d(TAG, "http exception! code: ${e.code()}, message: ${e.message}")
             }
             is UnknownHostException -> {
                 _mHomeEvent.emit(HomeEvent.NetworkError("Ошибка", "Проверьте подключение!"))
@@ -74,19 +93,21 @@ class HomeViewModel : BaseViewModel() {
         }
     }
 
-    fun setSwipeState(isSwiped: Boolean) {
+    private val mGeneratedStr = ('a'..'z').random().toString()
+
+    private fun setProgressState(isShow: Boolean) {
+        mHomeState.isShowProgress = isShow
+    }
+
+    private fun setSwipeState(isSwiped: Boolean) {
         mHomeState.isRefreshing = isSwiped
-        updateUi()
     }
 
     private fun updateUi() {
         _homeLiveData.value = mHomeState
     }
 
-    private fun updateUiAsync() {
-        _homeLiveData.postValue(mHomeState)
-    }
-
+    private fun updateUiAsync() = _homeLiveData.postValue(mHomeState)
 
     val homeEvent: SharedFlow<HomeEvent>
         get() = _mHomeEvent.asSharedFlow()

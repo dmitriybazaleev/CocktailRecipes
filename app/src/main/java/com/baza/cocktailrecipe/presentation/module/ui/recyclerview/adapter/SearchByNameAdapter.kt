@@ -17,7 +17,7 @@ import com.baza.cocktailrecipe.presentation.module.ui.dp
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LabelUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchUiEntity
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchHolder
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.LabelHolder
 import com.baza.cocktailrecipe.presentation.module.ui.sp
 import java.lang.IllegalStateException
@@ -81,7 +81,7 @@ private fun SearchUiEntity.compare(newItem: SearchUiEntity): Boolean {
 }
 
 class SearchByNameAdapter constructor(
-    private val itemObserver: SearchHolder.ItemObserver? = null,
+    private val itemObserver: SearchCocktailHolder.ItemObserver? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val searchDiffCallback = object : DiffUtil.ItemCallback<SearchUiEntity>() {
@@ -122,7 +122,7 @@ class SearchByNameAdapter constructor(
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
                 if (viewHolder is LabelHolder) return 0
-                if (viewHolder is SearchHolder) {
+                if (viewHolder is SearchCocktailHolder) {
                     try {
                         val itemEntity =
                             mSearchAsyncDiffer.currentList[viewHolder.adapterPosition] as? DrinkUiEntitySearch
@@ -140,7 +140,7 @@ class SearchByNameAdapter constructor(
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (viewHolder is SearchHolder) {
+                if (viewHolder is SearchCocktailHolder) {
                     callback?.invoke(
                         mSearchAsyncDiffer.currentList[viewHolder.adapterPosition] as DrinkUiEntitySearch,
                         viewHolder
@@ -210,7 +210,7 @@ class SearchByNameAdapter constructor(
                 val v = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_search_result, parent, false)
 
-                SearchHolder(v, itemObserver)
+                SearchCocktailHolder(v, itemObserver)
             }
             SearchViewType.SEARCH_TEXT_TYPE.ordinal -> {
                 LabelHolder.create(parent)
@@ -222,7 +222,7 @@ class SearchByNameAdapter constructor(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is SearchHolder -> {
+            is SearchCocktailHolder -> {
                 holder.bind(mSearchAsyncDiffer.currentList[position] as DrinkUiEntitySearch)
             }
             is LabelHolder -> {

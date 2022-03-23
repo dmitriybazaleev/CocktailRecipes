@@ -10,6 +10,18 @@ class HomeUseCase @Inject constructor(
     private val api: CocktailApi
 ) {
 
+    /**
+     * Данный метод возвращает список рандомных коктейлей
+     */
+    suspend fun getRandomCocktail() = api.randomCocktail()
+
+    /**
+     * Возвращает список коктейлей по первой букве
+     */
+    suspend fun getCocktailsByLetter(
+        digit: String
+    ) = api.searchByFirstLetter(digit)
+
     suspend fun getRandomCocktail(
         success: suspend (JsonObject) -> Unit,
         onError: suspend (e: Exception) -> Unit

@@ -40,9 +40,7 @@ class LauncherViewModel : ViewModel() {
         }
     }
 
-    private suspend fun emitEvent(event: LauncherEvent) {
-        _mLauncherEvent.emit(event)
-    }
+    private suspend fun emitEvent(event: LauncherEvent) = _mLauncherEvent.emit(event)
 
     private fun updateState() {
         _mLauncherState.value = mState
