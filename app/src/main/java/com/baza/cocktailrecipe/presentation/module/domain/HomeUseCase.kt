@@ -22,15 +22,10 @@ class HomeUseCase @Inject constructor(
         digit: String
     ) = api.searchByFirstLetter(digit)
 
-    suspend fun getRandomCocktail(
-        success: suspend (JsonObject) -> Unit,
-        onError: suspend (e: Exception) -> Unit
-    ) {
-        try {
-            success.invoke(api.randomCocktail())
-
-        } catch (e: Exception) {
-            onError.invoke(e)
-        }
-    }
+    /**
+     * Данный запрос уходит на получение подробных данных о коктейле
+     */
+    suspend fun getCocktailById(
+        cocktailId: Int
+    ) = api.lookupFullCocktailDetails(cocktailId)
 }

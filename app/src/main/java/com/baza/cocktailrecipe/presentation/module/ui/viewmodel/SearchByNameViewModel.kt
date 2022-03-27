@@ -14,7 +14,7 @@ import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toViewType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchUiEntity
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchNameUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchByNameState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -73,14 +73,18 @@ class SearchByNameViewModel : ViewModel() {
                             response.getAsJsonArray(DRINKS), type
                         )
                         Log.d(TAG, "response entity: $response")
-                        onHandleResponse(responseEntity)
+                        mState.searchResult = responseEntity
+                            .toViewType("Результат поиска", false)
 
                     } else {
                         Log.d(TAG, "nothing has been found")
                         resetCurrentList()
                         setPlaceholderState(true)
-                        updateUiAsync()
                     }
+
+                    setProgressState(false)
+                    updateUiAsync()
+
                 },
                 onError = { e ->
                     setProgressState(false)
@@ -153,12 +157,6 @@ class SearchByNameViewModel : ViewModel() {
         }
     }
 
-    private fun onHandleResponse(newResult: List<DrinkEntity>) {
-        mState.searchResult = newResult.toViewType("Результат поиска", false)
-        setProgressState(false)
-        updateUiAsync()
-    }
-
     private fun setProgressState(isShowProgress: Boolean) {
         if (isShowProgress != mState.isShowProgress)
             mState.isShowProgress = isShowProgress
@@ -222,7 +220,7 @@ class SearchByNameViewModel : ViewModel() {
                 searchByNameUseCase.onRemoveDrink(
                     drink,
                     onSuccess = {
-                        val newList = mutableListOf<SearchUiEntity>()
+                        val newList = mutableListOf<SearchNameUiEntity>()
                         newList.addAll(mState.searchResult)
                         newList.remove(item)
                         if (newList.size == 1) {

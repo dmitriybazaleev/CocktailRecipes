@@ -147,7 +147,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     }
 
     override fun onItemClicked(item: DrinkUiEntitySearch) {
-        if (item.includeSwipe) {
+        if (item.isSavedList) {
             /**
              * Текущие данные, которые показывает список из Room
              */

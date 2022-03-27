@@ -3,11 +3,11 @@ package com.baza.cocktailrecipe.presentation.module.data.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
-import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientDbEntity
+import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 
 @Database(
-    entities = [DrinkEntity::class, IngredientDbEntity::class],
-    version = 1,
+    entities = [DrinkEntity::class, IngredientEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class RoomCreator : RoomDatabase() {

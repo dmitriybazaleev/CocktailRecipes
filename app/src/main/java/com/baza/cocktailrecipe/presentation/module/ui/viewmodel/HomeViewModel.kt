@@ -10,8 +10,7 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.TAG
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toBlurViewType
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRandomDrink
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRecommendationEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.HomeState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -34,49 +33,74 @@ class HomeViewModel : BaseViewModel() {
 
     init {
         App.appComponent?.inject(this)
-        getCocktails()
+        getCocktails(false)
     }
 
 
-    private fun getCocktails() {
+    fun getCocktails(isRefresh: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
+            if (isRefresh) {
+                setSwipeState(true)
+
+            } else {
+                setProgressState(true)
+            }
+            setPlaceholderState(false)
+            updateUiAsync()
+
             try {
                 val randomList = homeUseCase.getRandomCocktail()
-                val byLetterList = homeUseCase.getCocktailsByLetter(mGeneratedStr)
+                val byLetterList =
+                    homeUseCase.getCocktailsByLetter(getGeneratedChar().toString())
 
-
-                if (!randomList.isJsonNull && !byLetterList.isJsonNull) {
-                    val randomCocktailList = Gson().fromJson<List<DrinkEntity>>(
-                        randomList.getAsJsonArray(DRINKS),
-                        object : TypeToken<List<DrinkEntity>>() {}.type
-                    ).toBlurViewType()
-
-                    val cocktailByLetter = Gson().fromJson<List<DrinkEntity>>(
+                if (!randomList.get(DRINKS).isJsonNull && !byLetterList.get(DRINKS).isJsonNull) {
+                    val randomCocktails = Gson().fromJson<List<DrinkEntity>>(
                         byLetterList.getAsJsonArray(DRINKS),
                         object : TypeToken<List<DrinkEntity>>() {}.type
-                    ).toRandomDrink()
-                    mHomeState.cocktailsList.addAll(randomCocktailList)
-                    mHomeState.cocktailsList.addAll(cocktailByLetter)
-                    Log.d(
-                        TAG,
-                        "random list: $randomCocktailList, " +
-                                "cocktails list: $cocktailByLetter"
                     )
 
-                    updateUiAsync()
+                    /**
+                     * Т.к сервер отправляет рандомный коктейль массивом
+                     * Берем 0 индекс
+                     */
+                    val randomCocktailList = Gson().fromJson<DrinkEntity>(
+                        randomList.getAsJsonArray(DRINKS).get(0),
+                        object : TypeToken<DrinkEntity>() {}.type
+                    )
+                    Log.d(TAG, "Current recommendation list: ${mHomeState.recommendationsList}")
+                    mHomeState.randomList = randomCocktails
+                    mHomeState.recommendationsList = randomCocktails.toRecommendationEntity()
+                    mHomeState.randomDrink = randomCocktailList
 
                 } else {
-                    Log.d(TAG, "")
+                    Log.d(TAG, "response is unsuccessful")
+                    resetCurrentData()
+                    setPlaceholderState(true)
                 }
-
 
             } catch (e: Exception) {
                 e.printStackTrace()
+
                 withContext(Dispatchers.Main) {
                     onHandleError(e)
                 }
+
+            } finally {
+                setProgressState(false)
+                setSwipeState(false)
+                updateUiAsync()
             }
         }
+    }
+
+    private fun resetCurrentData() {
+        mHomeState.randomDrink = null
+        mHomeState.randomList = mutableListOf()
+        mHomeState.recommendationsList = mutableListOf()
+    }
+
+    private suspend fun emitEvent(homeEvent: HomeEvent) {
+        _mHomeEvent.emit(homeEvent)
     }
 
     private suspend fun onHandleError(e: Exception) {
@@ -85,10 +109,19 @@ class HomeViewModel : BaseViewModel() {
                 Log.d(TAG, "http exception! code: ${e.code()}, message: ${e.message}")
             }
             is UnknownHostException -> {
-                _mHomeEvent.emit(HomeEvent.NetworkError("Ошибка", "Проверьте подключение!"))
+                _mHomeEvent.emit(
+                    HomeEvent.NetworkError(
+                        "Ошибка", "Проверьте подключение интернета!"
+                    )
+                )
             }
             is SocketTimeoutException -> {
-                _mHomeEvent.emit(HomeEvent.NetworkError("Ошибка", "Попробуйте попытку позже"))
+                _mHomeEvent.emit(
+                    HomeEvent.NetworkError(
+                        "Ошибка",
+                        "Попробуйте попытку позже"
+                    )
+                )
             }
         }
     }
@@ -96,11 +129,26 @@ class HomeViewModel : BaseViewModel() {
     private val mGeneratedStr = ('a'..'z').random().toString()
 
     private fun setProgressState(isShow: Boolean) {
-        mHomeState.isShowProgress = isShow
+        if (mHomeState.isShowProgress != isShow)
+            mHomeState.isShowProgress = isShow
     }
 
+    private fun setPlaceholderState(isShowPlaceholder: Boolean) {
+        if (mHomeState.isShowPlaceholder != isShowPlaceholder)
+            mHomeState.isShowPlaceholder = isShowPlaceholder
+    }
+
+    private fun getGeneratedChar(): Char {
+        val alphabet = "abcdefghijklmnopqrstuvwxyz"
+        val randomIndex = (Math.random() * alphabet.length).toInt()
+
+        return alphabet[randomIndex]
+    }
+
+
     private fun setSwipeState(isSwiped: Boolean) {
-        mHomeState.isRefreshing = isSwiped
+        if (mHomeState.isRefreshing != isSwiped)
+            mHomeState.isRefreshing = isSwiped
     }
 
     private fun updateUi() {

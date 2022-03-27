@@ -75,7 +75,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.baza.cocktailrecipe.presentation.widget.PlaceHolderView
+    <com.baza.cocktailrecipe.presentation.widget.PlaceholderView
         android:id="@+id/pv_search_by_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

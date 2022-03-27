@@ -16,7 +16,7 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.dp
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LabelUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchUiEntity
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchNameUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.LabelHolder
 import com.baza.cocktailrecipe.presentation.module.ui.sp
@@ -25,8 +25,8 @@ import java.lang.IllegalStateException
 fun List<DrinkEntity>.toViewType(
     labelStr: String,
     includeSwipe: Boolean
-): MutableList<SearchUiEntity> {
-    val newList = mutableListOf<SearchUiEntity>()
+): MutableList<SearchNameUiEntity> {
+    val newList = mutableListOf<SearchNameUiEntity>()
     newList.add(LabelUiEntity(labelStr))
 
     if (this.isNotEmpty()) {
@@ -41,7 +41,7 @@ fun List<DrinkEntity>.toViewType(
                     strInstruction = dataEntity.strInstruction,
                     strDrinkThumb = dataEntity.strDrinkThumb,
                     strVideo = dataEntity.strVideo,
-                    includeSwipe = includeSwipe
+                    isSavedList = includeSwipe
                 )
             )
         }
@@ -63,7 +63,7 @@ fun DrinkUiEntitySearch.toDrinkEntity(): DrinkEntity {
     )
 }
 
-private fun SearchUiEntity.compare(newItem: SearchUiEntity): Boolean {
+private fun SearchNameUiEntity.compare(newItem: SearchNameUiEntity): Boolean {
     return when (newItem.getViewType()) {
         SearchByNameAdapter.SearchViewType.SEARCH_TEXT_TYPE -> {
             val newModel = newItem as? LabelUiEntity
@@ -84,17 +84,17 @@ class SearchByNameAdapter constructor(
     private val itemObserver: SearchCocktailHolder.ItemObserver? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val searchDiffCallback = object : DiffUtil.ItemCallback<SearchUiEntity>() {
+    private val searchDiffCallback = object : DiffUtil.ItemCallback<SearchNameUiEntity>() {
         override fun areItemsTheSame(
-            oldItem: SearchUiEntity,
-            newItem: SearchUiEntity
+            oldItem: SearchNameUiEntity,
+            newItem: SearchNameUiEntity
         ): Boolean {
             return oldItem == newItem
         }
 
         override fun areContentsTheSame(
-            oldItem: SearchUiEntity,
-            newItem: SearchUiEntity
+            oldItem: SearchNameUiEntity,
+            newItem: SearchNameUiEntity
         ): Boolean {
             return oldItem.compare(newItem)
         }
@@ -127,7 +127,7 @@ class SearchByNameAdapter constructor(
                         val itemEntity =
                             mSearchAsyncDiffer.currentList[viewHolder.adapterPosition] as? DrinkUiEntitySearch
 
-                        if (itemEntity?.includeSwipe == false) {
+                        if (itemEntity?.isSavedList == false) {
                             return 0
                         }
 
@@ -196,7 +196,7 @@ class SearchByNameAdapter constructor(
         return paint
     }
 
-    private val mSearchAsyncDiffer: AsyncListDiffer<SearchUiEntity> =
+    private val mSearchAsyncDiffer: AsyncListDiffer<SearchNameUiEntity> =
         AsyncListDiffer(this, searchDiffCallback)
     private var mItemTouchHelper: ItemTouchHelper? = null
 
@@ -243,7 +243,7 @@ class SearchByNameAdapter constructor(
         }
     }
 
-    fun updateList(searchResult: List<SearchUiEntity>) =
+    fun updateList(searchResult: List<SearchNameUiEntity>) =
         mSearchAsyncDiffer.submitList(searchResult)
 
     enum class SearchViewType {

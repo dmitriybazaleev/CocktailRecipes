@@ -5,6 +5,7 @@ import com.baza.cocktailrecipe.presentation.module.data.room.DrinksDao
 import com.baza.cocktailrecipe.presentation.module.data.room.IngredientDao
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.domain.SavedUseCase
+import com.baza.cocktailrecipe.presentation.module.domain.SearchByIngredientUseCase
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByNameUseCase
 import dagger.Module
 import dagger.Provides
@@ -29,4 +30,10 @@ class UseCaseModule {
         drinksDao: DrinksDao,
         ingredientDao: IngredientDao
     ): SavedUseCase = SavedUseCase(drinksDao, ingredientDao)
+
+    @Provides
+    fun provideIngredientUseCase(
+        api: CocktailApi,
+        dao: IngredientDao
+    ): SearchByIngredientUseCase = SearchByIngredientUseCase(api, dao)
 }

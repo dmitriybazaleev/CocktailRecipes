@@ -2,6 +2,7 @@ package com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.fragments.SearchByIngredientFragment
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.SearchByNameFragment
 import java.lang.IllegalStateException
 
@@ -21,9 +22,8 @@ class SearchAdapter constructor(
             0 -> {
                 SearchByNameFragment.create()
             }
-
             1 ->
-                SearchByNameFragment.create()
+                SearchByIngredientFragment.create()
 
             else -> throw IllegalStateException("Unknown position")
         }

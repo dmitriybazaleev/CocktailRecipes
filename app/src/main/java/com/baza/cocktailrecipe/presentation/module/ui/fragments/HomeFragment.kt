@@ -1,6 +1,7 @@
 package com.baza.cocktailrecipe.presentation.module.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentHomeBinding
+import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
+import com.baza.cocktailrecipe.presentation.module.ui.blur.BlurHelper
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.HomeAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RandomCocktailAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RecommendationAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.RecommendationUiEntity
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.CocktailHolder
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.RecommendationHolder
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.HomeViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -20,12 +27,16 @@ import kotlinx.coroutines.flow.onEach
 
 const val TAG = "homeTag"
 
-class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnRefreshListener {
+class HomeFragment : BaseFragment<FragmentHomeBinding>(),
+    SwipeRefreshLayout.OnRefreshListener, RecommendationHolder.RecommendationItemObserver,
+    CocktailHolder.CocktailItemObserver {
 
     private val viewModel by viewModels<HomeViewModel>()
 
-    private var mAdapter: HomeAdapter? = null
     private var eventJob: Job? = null
+
+    private val recommendationAdapter = RecommendationAdapter(this)
+    private val randomCocktailAdapter = RandomCocktailAdapter(this)
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeBinding
         get() = FragmentHomeBinding::inflate
@@ -39,8 +50,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
     }
 
     private fun initRecycler() {
-        mAdapter = HomeAdapter(lifecycleOwner = viewLifecycleOwner)
-        binding?.rvHome?.adapter = mAdapter
+        binding?.rvRecommendation?.adapter = recommendationAdapter
+        binding?.rvRandom?.adapter = randomCocktailAdapter
     }
 
     private fun addListeners() {
@@ -51,8 +62,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
         viewModel.homeLiveData.observe(viewLifecycleOwner) { state ->
             updateProgressState(state.isShowProgress)
             updateSwipeState(state.isRefreshing)
-            mAdapter?.updateList(state.cocktailsList)
+            isShowPlaceholder(state.isShowPlaceholder)
+            recommendationAdapter.updateRecommendations(state.recommendationsList)
+            randomCocktailAdapter.updateList(state.randomList)
+            state?.randomDrink?.let { random ->
+                updateRandomDrinkData(random)
+            }
         }
+    }
+
+    private fun updateRandomDrinkData(entity: DrinkEntity) {
+        BlurHelper(
+            requireContext(),
+            viewLifecycleOwner
+        ).blurByUrl(entity.strDrinkThumb) { blurBitmap ->
+            binding?.ivRandomCocktailBlur?.setImageBitmap(blurBitmap)
+        }
+        binding?.txvRandomCocktailName?.text = entity.strDrink
     }
 
     private fun updateSwipeState(isSwiped: Boolean) {
@@ -76,10 +102,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), SwipeRefreshLayout.OnR
             .launchIn(lifecycleScope)
     }
 
+    private fun isShowPlaceholder(isShow: Boolean) {
+        binding?.pvHome?.isVisible = isShow
+    }
+
     private fun updateProgressState(isShow: Boolean) {
         binding?.pbHome?.isVisible = isShow
     }
 
     override fun onRefresh() {
+        viewModel.getCocktails(true)
+    }
+
+    override fun onRecommendationItemClicked(entity: RecommendationUiEntity) {
+
+    }
+
+    override fun onItemClicked(entity: DrinkEntity) {
+        showToast("Item clicked!")
+    }
+
+    override fun onVideoUrlSelected(url: String) {
+        showToast(url)
     }
 }

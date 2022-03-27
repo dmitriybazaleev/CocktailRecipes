@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -25,6 +24,7 @@ fun EditText.textChanges(): Flow<CharSequence?> = callbackFlow {
         override fun afterTextChanged(s: Editable?) {
             trySend(s)
         }
+
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
     }
@@ -47,6 +47,19 @@ fun Fragment.doDelay(time: Long, action: () -> Unit) {
 
 fun FragmentActivity.doDelay(time: Long, action: () -> Unit) {
     this.lifecycleScope.launch {
+        try {
+            delay(time)
+
+            action.invoke()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+
+fun ViewModel.doDelay(time: Long, action: () -> Unit) {
+    viewModelScope.launch {
         try {
             delay(time)
 

@@ -12,7 +12,7 @@ import androidx.annotation.StringRes
 import com.airbnb.lottie.LottieAnimationView
 import com.baza.cocktailrecipe.R
 
-class PlaceHolderView : LinearLayout {
+class PlaceholderView : LinearLayout {
 
     private var mPlaceHolderText: TextView? = null
     private var mLottieImage: LottieAnimationView? = null

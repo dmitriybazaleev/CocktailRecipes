@@ -12,11 +12,6 @@
         android:icon="@drawable/icn_search"/>
 
     <item
-        android:id="@+id/saved_navigation"
-        android:title="@string/saved"
-        android:icon="@drawable/icn_saved"/>
-
-    <item
         android:id="@+id/settings_navigation"
         android:title="@string/settings"
         android:icon="@drawable/icn_settings_grey"/>

@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class LabelUiEntity(
     val searchLabel: String?
-) : Parcelable, SearchUiEntity {
+) : Parcelable, SearchNameUiEntity {
     override fun getViewType(): SearchByNameAdapter.SearchViewType =
         SearchByNameAdapter.SearchViewType.SEARCH_TEXT_TYPE
 

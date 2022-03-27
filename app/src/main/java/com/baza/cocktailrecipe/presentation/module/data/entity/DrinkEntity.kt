@@ -3,6 +3,7 @@ package com.baza.cocktailrecipe.presentation.module.data.entity
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.baza.cocktailrecipe.presentation.module.data.api.*
 import com.google.gson.annotations.SerializedName
@@ -10,7 +11,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "Drinks")
-data class DrinkEntity(
+data class DrinkEntity constructor(
+
     @PrimaryKey(autoGenerate = true)
     var idRoomDrink: Int,
 
@@ -20,11 +22,11 @@ data class DrinkEntity(
 
     @SerializedName(STR_CATEGORY)
     @ColumnInfo(name = "strCategory")
-    var strCategory: String? ,
+    var strCategory: String?,
 
     @SerializedName(STR_ALCOHOLIC)
     @ColumnInfo(name = "strAlcoholic")
-    var strAlcoholic: String? = null,
+    var strAlcoholic: String?,
 
     @ColumnInfo(name = "strGlass")
     @SerializedName(STR_GLASS)
@@ -41,5 +43,4 @@ data class DrinkEntity(
     @ColumnInfo(name = "strVideo")
     @SerializedName(STR_VIDEO)
     var strVideo: String?
-) : Parcelable {
-}
+) : Parcelable

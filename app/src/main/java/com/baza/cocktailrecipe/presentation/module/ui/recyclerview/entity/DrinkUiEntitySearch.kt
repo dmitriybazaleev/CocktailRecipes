@@ -14,8 +14,8 @@ data class DrinkUiEntitySearch(
     val strInstruction: String?,
     val strDrinkThumb: String?,
     val strVideo: String?,
-    val includeSwipe: Boolean
-) : Parcelable, SearchUiEntity {
+    val isSavedList: Boolean
+) : Parcelable, SearchNameUiEntity {
     override fun getViewType(): SearchByNameAdapter.SearchViewType =
         SearchByNameAdapter.SearchViewType.SEARCH_RESULT_TYPE
 }
