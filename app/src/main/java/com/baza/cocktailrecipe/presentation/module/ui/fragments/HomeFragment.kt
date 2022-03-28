@@ -1,7 +1,6 @@
 package com.baza.cocktailrecipe.presentation.module.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +26,7 @@ import kotlinx.coroutines.flow.onEach
 
 const val TAG = "homeTag"
 
+// TODO: 28.03.2022 Решить проблему со SwipeRefreshLayout
 class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     SwipeRefreshLayout.OnRefreshListener, RecommendationHolder.RecommendationItemObserver,
     CocktailHolder.CocktailItemObserver {
@@ -119,10 +119,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     }
 
     override fun onItemClicked(entity: DrinkEntity) {
-        showToast("Item clicked!")
+
     }
 
     override fun onVideoUrlSelected(url: String) {
-        showToast(url)
+
     }
 }

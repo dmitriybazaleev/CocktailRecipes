@@ -23,4 +23,7 @@ abstract class IngredientDao {
 
     @Query("DELETE FROM INGREDIENTS")
     abstract suspend fun clear()
+
+    @Query("DELETE FROM Ingredients WHERE idIngredientStr =:id")
+    abstract suspend fun onRemoveIngredientById(id: String)
 }

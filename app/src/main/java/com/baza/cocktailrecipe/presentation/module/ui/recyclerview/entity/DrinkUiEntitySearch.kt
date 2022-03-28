@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DrinkUiEntitySearch(
-    val idDrink: Int?,
+    val idDrink: String,
     val strDrink: String?,
     val strCategory: String?,
     val strAlcoholic: String?,

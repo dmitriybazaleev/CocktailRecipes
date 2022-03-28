@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import com.baza.cocktailrecipe.R
@@ -101,13 +102,17 @@ class FullCocktailInfoDialog : BottomSheetDialogFragment() {
                 binding?.txvFullCocktailDescr?.setTextOrHide(drinkEntity?.strInstruction)
                 binding?.txvFullCocktailAlcoholic?.setTextOrHide(drinkEntity?.strAlcoholic)
                 binding?.txvFullCocktailCategory?.setTextOrHide(drinkEntity?.strCategory)
-            }
 
+            }
             if (args[INGREDIENT_PARAMS_KEY] != null) {
                 val ingredientEntity = args[INGREDIENT_PARAMS_KEY] as? IngredientEntity
                 Log.d(TAG, "Ingredient entity: $ingredientEntity")
-                // TODO: 19.03.2022 Replace with your own action!
-                return
+                binding?.ivFullCocktail?.loadGlide(
+                    ContextCompat.getDrawable(requireContext(), R.drawable.icn_drink_placeholder)
+                )
+                binding?.txvFullCocktailDescr?.setTextOrHide(ingredientEntity?.strDescription)
+                binding?.txvFullCocktailAlcoholic?.setTextOrHide(ingredientEntity?.strAlcohol)
+                binding?.txvFullCocktailCategory?.setTextOrHide(ingredientEntity?.strType)
             }
         }
     }

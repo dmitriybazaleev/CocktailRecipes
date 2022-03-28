@@ -6,8 +6,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ActionDialogParams(
-    val actionDialogTitle: String,
-    val actionDialogMessage: String,
+    val actionDialogTitle: String?,
+    val actionDialogMessage: String?,
     val icon: Int?,
     val positiveButtonText: String? = null,
     val positiveButtonAction: ((v: View) -> Unit)? = null,

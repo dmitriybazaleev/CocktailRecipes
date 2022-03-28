@@ -3,7 +3,6 @@ package com.baza.cocktailrecipe.presentation.module.data.entity
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.baza.cocktailrecipe.presentation.module.data.api.*
 import com.google.gson.annotations.SerializedName
@@ -13,34 +12,35 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "Drinks")
 data class DrinkEntity constructor(
 
-    @PrimaryKey(autoGenerate = true)
-    var idRoomDrink: Int,
+    @SerializedName(ID_DRINK)
+    @PrimaryKey
+    val drinkId: String,
 
     @ColumnInfo(name = "strDrink")
     @SerializedName(STR_DRINK)
-    var strDrink: String?,
+    val strDrink: String?,
 
     @SerializedName(STR_CATEGORY)
     @ColumnInfo(name = "strCategory")
-    var strCategory: String?,
+    val strCategory: String?,
 
     @SerializedName(STR_ALCOHOLIC)
     @ColumnInfo(name = "strAlcoholic")
-    var strAlcoholic: String?,
+    val strAlcoholic: String?,
 
     @ColumnInfo(name = "strGlass")
     @SerializedName(STR_GLASS)
-    var strGlass: String?,
+    val strGlass: String?,
 
     @ColumnInfo(name = "strInstruction")
     @SerializedName(STR_INSTRUCTION)
-    var strInstruction: String?,
+    val strInstruction: String?,
 
     @ColumnInfo(name = "strDrinkThumb")
     @SerializedName(STR_DRINK_THUMB)
-    var strDrinkThumb: String?,
+    val strDrinkThumb: String?,
 
     @ColumnInfo(name = "strVideo")
     @SerializedName(STR_VIDEO)
-    var strVideo: String?
+    val strVideo: String?
 ) : Parcelable

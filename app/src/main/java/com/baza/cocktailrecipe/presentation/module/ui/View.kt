@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestListener
@@ -57,6 +58,18 @@ fun ImageView.loadGlide(
             .listener(listener)
             .into(this)
     }
+}
+
+fun ImageView.loadCircleImage(
+    url: String?,
+    @DrawableRes placeholder: Int
+) {
+    Glide.with(this.context)
+        .load(url)
+        .error(placeholder)
+        .circleCrop()
+        .into(this)
+
 }
 
 fun ImageView.loadCircleImage(

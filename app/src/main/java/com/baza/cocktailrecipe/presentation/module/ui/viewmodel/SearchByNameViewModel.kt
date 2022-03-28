@@ -12,7 +12,7 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByNameUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toViewType
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchViewType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchNameUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchByNameState
@@ -74,7 +74,7 @@ class SearchByNameViewModel : ViewModel() {
                         )
                         Log.d(TAG, "response entity: $response")
                         mState.searchResult = responseEntity
-                            .toViewType("Результат поиска", false)
+                            .toSearchViewType("Результат поиска", false)
 
                     } else {
                         Log.d(TAG, "nothing has been found")
@@ -137,7 +137,7 @@ class SearchByNameViewModel : ViewModel() {
                 onSuccess = { response ->
                     Log.d(TAG, "saved drinks: $response")
                     if (response.isNotEmpty()) {
-                        mState.searchResult = response.toViewType(
+                        mState.searchResult = response.toSearchViewType(
                             "История поиска",
                             true
                         )
@@ -216,7 +216,7 @@ class SearchByNameViewModel : ViewModel() {
     fun onRemoveItem(item: DrinkUiEntitySearch, position: Int) {
         Log.d(TAG, "swiped position: $position Model swiped: $item")
         viewModelScope.launch(Dispatchers.IO) {
-            item.idDrink?.let { drink ->
+            item.idDrink.let { drink ->
                 searchByNameUseCase.onRemoveDrink(
                     drink,
                     onSuccess = {

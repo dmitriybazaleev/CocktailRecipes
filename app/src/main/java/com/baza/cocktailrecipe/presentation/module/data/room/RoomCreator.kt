@@ -7,7 +7,7 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 
 @Database(
     entities = [DrinkEntity::class, IngredientEntity::class],
-    version = 2,
+    version = 5,
     exportSchema = false
 )
 abstract class RoomCreator : RoomDatabase() {

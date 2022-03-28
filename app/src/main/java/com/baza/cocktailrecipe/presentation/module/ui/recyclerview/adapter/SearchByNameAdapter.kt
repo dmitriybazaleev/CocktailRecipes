@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
+import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.dp
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LabelUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
@@ -22,18 +23,19 @@ import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.LabelH
 import com.baza.cocktailrecipe.presentation.module.ui.sp
 import java.lang.IllegalStateException
 
-fun List<DrinkEntity>.toViewType(
+fun List<DrinkEntity>.toSearchViewType(
     labelStr: String,
     includeSwipe: Boolean
 ): MutableList<SearchNameUiEntity> {
     val newList = mutableListOf<SearchNameUiEntity>()
-    newList.add(LabelUiEntity(labelStr))
 
     if (this.isNotEmpty()) {
+        newList.add(LabelUiEntity(labelStr))
+
         this.forEach { dataEntity ->
             newList.add(
                 DrinkUiEntitySearch(
-                    idDrink = dataEntity.idRoomDrink,
+                    idDrink = dataEntity.drinkId,
                     strDrink = dataEntity.strDrink,
                     strCategory = dataEntity.strCategory,
                     strAlcoholic = dataEntity.strAlcoholic,
@@ -50,9 +52,43 @@ fun List<DrinkEntity>.toViewType(
     return newList
 }
 
+fun List<IngredientEntity>.toSearchType(
+    label: String,
+    includeSwipe: Boolean
+): List<SearchNameUiEntity> {
+    val listResult = mutableListOf<SearchNameUiEntity>()
+
+    if (this.isNotEmpty()) {
+        listResult.add(
+            LabelUiEntity(
+                label
+            )
+        )
+
+        this.forEach { ingredientEntity ->
+            listResult.add(
+                DrinkUiEntitySearch(
+                    idDrink = ingredientEntity.idIngredientStr,
+                    strDrink = ingredientEntity.strIngredient,
+                    strCategory = ingredientEntity.strType,
+                    strAlcoholic = ingredientEntity.strAlcohol,
+                    strGlass = null,
+                    strInstruction = ingredientEntity.strDescription,
+                    strDrinkThumb = null,
+                    strVideo = null,
+                    isSavedList = includeSwipe
+                )
+            )
+        }
+    }
+
+
+    return listResult
+}
+
 fun DrinkUiEntitySearch.toDrinkEntity(): DrinkEntity {
     return DrinkEntity(
-        idRoomDrink = idDrink ?: 0,
+        drinkId = idDrink,
         strDrink = strDrink,
         strCategory = strCategory,
         strAlcoholic = strAlcoholic,
@@ -60,6 +96,17 @@ fun DrinkUiEntitySearch.toDrinkEntity(): DrinkEntity {
         strInstruction = strInstruction,
         strDrinkThumb = strDrinkThumb,
         strVideo = strVideo
+    )
+}
+
+fun DrinkUiEntitySearch.toIngredientEntity(): IngredientEntity {
+    return IngredientEntity(
+        idIngredientStr = idDrink,
+        strIngredient = strDrink,
+        strDescription = strInstruction,
+        strType = strGlass,
+        strAlcohol = strAlcoholic,
+        strAbv = null
     )
 }
 

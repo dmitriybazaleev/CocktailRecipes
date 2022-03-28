@@ -12,17 +12,14 @@ abstract class DrinksDao {
     @Query("SELECT * FROM Drinks")
     abstract suspend fun getAllDrinks(): List<DrinkEntity>
 
-    @Query("SELECT COUNT(idRoomDrink) FROM Drinks")
-    abstract suspend fun getRowCount(): Int
-
     @Query("SELECT * FROM Drinks WHERE strDrink =:drink")
     abstract suspend fun getDrinkByName(drink: String): DrinkEntity
 
     @Query("DELETE FROM DRINKS")
     abstract suspend fun clearDrinks()
 
-    @Query("DELETE FROM Drinks WHERE idRoomDrink =:drinkId")
-    abstract suspend fun removeDrink(drinkId: Int)
+    @Query("DELETE FROM Drinks WHERE drinkId =:drinkId")
+    abstract suspend fun removeDrink(drinkId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertDrinks(newList: List<DrinkEntity>)

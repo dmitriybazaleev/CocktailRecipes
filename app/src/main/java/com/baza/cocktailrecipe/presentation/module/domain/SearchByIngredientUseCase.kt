@@ -35,4 +35,34 @@ class SearchByIngredientUseCase @Inject constructor(
             onError.invoke(e)
         }
     }
+
+    suspend fun onInsertIngredient(
+        item: IngredientEntity,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            mDao.insertIngredient(item)
+
+            onSuccess.invoke()
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
+
+    suspend fun onRemoveIngredient(
+        ingredientId: String,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            mDao.onRemoveIngredientById(ingredientId)
+
+            onSuccess.invoke()
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
 }

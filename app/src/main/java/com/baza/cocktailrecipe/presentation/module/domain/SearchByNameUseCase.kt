@@ -52,7 +52,7 @@ class SearchByNameUseCase @Inject constructor(
     }
 
     suspend fun onRemoveDrink(
-        drinkId: Int,
+        drinkId: String,
         onSuccess: suspend () -> Unit,
         onError: suspend (e: Exception) -> Unit
     ) {

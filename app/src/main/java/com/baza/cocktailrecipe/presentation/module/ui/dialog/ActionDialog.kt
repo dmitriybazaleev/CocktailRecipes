@@ -101,8 +101,8 @@ class ActionDialog : BottomSheetDialogFragment() {
         private val context: Context,
         private val fm: FragmentManager
     ) {
-        private var mLabel: String = ""
-        private var mMessage: String = ""
+        private var mLabel: String? = null
+        private var mMessage: String? = null
         private var icon: Int? = null
 
         private var mPositiveButtonText: String? = null
@@ -121,7 +121,7 @@ class ActionDialog : BottomSheetDialogFragment() {
             negativeButtonAction = mNegativeButtonAction
         )
 
-        fun setLabel(label: String): Builder {
+        fun setLabel(label: String?): Builder {
             Log.d(TAG, "label: $label")
             mLabel = label
 
@@ -141,7 +141,7 @@ class ActionDialog : BottomSheetDialogFragment() {
             return this
         }
 
-        fun setMessage(message: String): Builder {
+        fun setMessage(message: String?): Builder {
             Log.d(TAG, "message: $message")
             mMessage = message
 
@@ -162,8 +162,8 @@ class ActionDialog : BottomSheetDialogFragment() {
         }
 
         fun setPositiveButton(
-            buttonText: String,
-            listener: ((v: View?) -> Unit)? = null
+            buttonText: String?,
+            listener: ((v: View) -> Unit)? = null
         ): Builder {
             Log.d(TAG, "positive button text: $buttonText")
             this.mPositiveButtonText = buttonText
@@ -190,7 +190,7 @@ class ActionDialog : BottomSheetDialogFragment() {
         }
 
         fun setNegativeButton(
-            buttonText: String,
+            buttonText: String?,
             action: ((v: View) -> Unit)? = null
         ): Builder {
             Log.d(TAG, "negative button text: $buttonText")

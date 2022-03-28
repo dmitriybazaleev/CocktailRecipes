@@ -9,11 +9,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AnimRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
 import com.baza.cocktailrecipe.presentation.module.ui.MainActivity
+import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
+import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.BaseViewModel
 import com.baza.cocktailrecipe.presentation.navigation.NavArguments
 
 abstract class BaseFragment<B : ViewBinding> : Fragment() {
@@ -29,6 +33,8 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
     private var _act: MainActivity? = null
     protected val act: MainActivity?
         get() = _act
+
+    private val viewModel by viewModels<BaseViewModel>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,6 +60,38 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         _act?.isShowBottomNav(isShowBottomNavigation())
     }
 
+    fun showActionDialog(
+        title: String?,
+        message: String?,
+        positiveButtonText: String? = null,
+        positiveButtonAction: ((v: View) -> Unit)? = null,
+        negativeButtonText: String? = null,
+        negativeButtonAction: ((v: View) -> Unit)? = null
+    ) {
+        ActionDialog.Builder(requireContext(), childFragmentManager)
+            .setLabel(title)
+            .setMessage(message)
+            .setNegativeButton(negativeButtonText, negativeButtonAction)
+            .setPositiveButton(positiveButtonText, positiveButtonAction)
+            .show()
+    }
+
+    fun showActionDialog(
+        @StringRes titleRes: Int,
+        @StringRes messageRes: Int,
+        @StringRes positiveButtonTextRes: Int,
+        positiveButtonAction: ((v: View) -> Unit)? = null,
+        negativeButtonText: Int,
+        negativeButtonAction: ((v: View) -> Unit)? = null
+    ) {
+        showToast("privet")
+        ActionDialog.Builder(requireContext(), childFragmentManager)
+            .setLabel(titleRes)
+            .setMessage(messageRes)
+            .setPositiveButton(positiveButtonTextRes, positiveButtonAction)
+            .setNegativeButton(negativeButtonText, negativeButtonAction)
+            .show()
+    }
 
     override fun onDetach() {
         super.onDetach()

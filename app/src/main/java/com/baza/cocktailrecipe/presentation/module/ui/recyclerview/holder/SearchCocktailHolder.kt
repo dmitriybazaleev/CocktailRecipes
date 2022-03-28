@@ -19,7 +19,7 @@ class SearchCocktailHolder constructor(
 
     fun bind(entity: DrinkUiEntitySearch) {
         mCocktailName.text = entity.strDrink
-        mCocktailImage.loadCircleImage(entity.strDrinkThumb)
+        mCocktailImage.loadCircleImage(entity.strDrinkThumb, R.drawable.icn_drink_placeholder)
 
         itemView.setOnClickListener {
             itemObserver?.onItemClicked(entity)
