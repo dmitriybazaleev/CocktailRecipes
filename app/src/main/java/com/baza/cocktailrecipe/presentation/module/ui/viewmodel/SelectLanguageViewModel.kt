@@ -106,12 +106,14 @@ class SelectLanguageViewModel : ViewModel() {
     fun onCheckChanged(checked: Boolean, position: Int, entity: LanguageUiEntity) {
         Log.d(TAG, "previous position: $currentSelectedPosition current position: $position")
         try {
-            if (currentSelectedPosition == position || currentSelectedPosition == -1) return
+            if (currentSelectedPosition == position) return
 
             setButtonState(mCurrentLanguage != entity.code)
             this.mSelectedCode = entity.code
 
-            mCurrentLanguagesList[currentSelectedPosition].isLanguageSelected = false
+            if (currentSelectedPosition != -1) {
+                mCurrentLanguagesList[currentSelectedPosition].isLanguageSelected = false
+            }
             mCurrentLanguagesList[position].isLanguageSelected = checked
             updateStateList()
             updateUi()
