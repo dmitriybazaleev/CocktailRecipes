@@ -8,10 +8,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.baza.cocktailrecipe.databinding.FragmentSearchByIngredientBinding
+import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchIngredientEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toIngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder

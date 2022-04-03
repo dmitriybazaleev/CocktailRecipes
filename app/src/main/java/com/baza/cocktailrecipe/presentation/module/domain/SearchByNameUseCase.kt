@@ -24,6 +24,19 @@ class SearchByNameUseCase @Inject constructor(
         }
     }
 
+    suspend fun getDrinkById(
+        drinkId: String,
+        onSuccess: suspend (response: JsonObject) -> Unit,
+        onError: suspend (e: Exception) -> Unit
+    ) {
+        try {
+            onSuccess.invoke(mApi.lookupFullCocktailDetails(drinkId))
+
+        } catch (e: Exception) {
+            onError.invoke(e)
+        }
+    }
+
     suspend fun onInsertDrink(
         entity: DrinkEntity,
         onSuccess: suspend () -> Unit,

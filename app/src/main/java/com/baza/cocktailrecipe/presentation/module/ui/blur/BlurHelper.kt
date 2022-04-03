@@ -37,9 +37,7 @@ class BlurHelper constructor(
             .load(url)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    lifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                        doBlur(resource, onSuccess)
-                    }
+                    doBlur(resource, onSuccess)
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
@@ -48,34 +46,35 @@ class BlurHelper constructor(
             })
     }
 
-    private suspend fun doBlur(resource: Bitmap, onSuccess: (Bitmap?) -> Unit) {
-        val scalableBitmap = Bitmap.createScaledBitmap(
-            resource,
-            (resource.width * scaleFactor).toInt(),
-            (resource.height * scaleFactor).toInt(),
-            false
-        )
+    private fun doBlur(resource: Bitmap, onSuccess: (Bitmap?) -> Unit) {
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            val scalableBitmap = Bitmap.createScaledBitmap(
+                resource,
+                (resource.width * scaleFactor).toInt(),
+                (resource.height * scaleFactor).toInt(),
+                false
+            )
 
-        val canvas = Canvas(scalableBitmap)
-        val myPaint = Paint()
-        myPaint.color = Color.parseColor("#00FFFFFF")
-        canvas.drawRect(
-            0f,
-            0f,
-            (resource.width * scaleFactor).toFloat(),
-            (resource.height * scaleFactor).toFloat(),
-            myPaint
-        )
-        try {
-            BlurKit.blur(scalableBitmap, 10)
+            val canvas = Canvas(scalableBitmap)
+            val myPaint = Paint()
+            myPaint.color = Color.parseColor("#00FFFFFF")
+            canvas.drawRect(
+                0f,
+                0f,
+                (resource.width * scaleFactor).toFloat(),
+                (resource.height * scaleFactor).toFloat(),
+                myPaint
+            )
+            try {
+                BlurKit.blur(scalableBitmap, 10)
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            withContext(Dispatchers.Main) {
+                onSuccess(scalableBitmap)
+            }
         }
-
-        withContext(Dispatchers.Main) {
-            onSuccess(scalableBitmap)
-        }
-
     }
 }

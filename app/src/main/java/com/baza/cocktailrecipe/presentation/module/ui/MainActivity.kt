@@ -5,10 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.ActivityMainBinding
+import com.baza.cocktailrecipe.presentation.base.App
+import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
 import com.baza.cocktailrecipe.presentation.navigation.attachController
 
 /**

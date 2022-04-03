@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -84,5 +85,11 @@ class DefaultToolbar : LinearLayout {
 
     } catch (e: Exception) {
         e.printStackTrace()
+    }
+
+    fun setOnBackButtonClick(listener: (v: View) -> Unit) {
+        mToolbarImageBack?.setOnClickListener {
+            listener.invoke(it)
+        }
     }
 }

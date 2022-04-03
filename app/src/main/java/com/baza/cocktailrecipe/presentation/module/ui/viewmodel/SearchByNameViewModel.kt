@@ -262,6 +262,10 @@ class SearchByNameViewModel : ViewModel() {
         _searchByNameLiveData.postValue(mState)
     }
 
+    private suspend fun emitEvent(event: SearchEvent) {
+        _mSearchEvent.emit(event)
+    }
+
     val searchByNameLiveData: LiveData<SearchByNameState>
         get() = _searchByNameLiveData
 }

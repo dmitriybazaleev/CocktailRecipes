@@ -2,6 +2,7 @@ package com.baza.cocktailrecipe.presentation.navigation
 
 import androidx.annotation.AnimRes
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 
 /**
@@ -55,4 +56,9 @@ interface Navigator {
         @AnimRes popExitAnim: Int,
         vararg args: NavArguments
     )
+
+    /**
+     * Данный метод возвращает текущий фрагмент
+     */
+    fun getCurrentFragment() : Fragment?
 }

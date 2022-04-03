@@ -1,6 +1,7 @@
 package com.baza.cocktailrecipe.presentation.module.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.onEach
 
 const val TAG = "homeTag"
 
-// TODO: 28.03.2022 Решить проблему со SwipeRefreshLayout
 class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     SwipeRefreshLayout.OnRefreshListener, RecommendationHolder.RecommendationItemObserver,
     CocktailHolder.CocktailItemObserver {
@@ -62,7 +62,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
         viewModel.homeLiveData.observe(viewLifecycleOwner) { state ->
             updateProgressState(state.isShowProgress)
             updateSwipeState(state.isRefreshing)
-            isShowPlaceholder(state.isShowPlaceholder)
             recommendationAdapter.updateRecommendations(state.recommendationsList)
             randomCocktailAdapter.updateList(state.randomList)
             state?.randomDrink?.let { random ->
@@ -102,10 +101,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
             .launchIn(lifecycleScope)
     }
 
-    private fun isShowPlaceholder(isShow: Boolean) {
-        binding?.pvHome?.isVisible = isShow
-    }
-
     private fun updateProgressState(isShow: Boolean) {
         binding?.pbHome?.isVisible = isShow
     }
@@ -115,14 +110,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     }
 
     override fun onRecommendationItemClicked(entity: RecommendationUiEntity) {
-
+        Log.d(TAG, "recommendation item: $entity")
     }
 
     override fun onItemClicked(entity: DrinkEntity) {
-
+        Log.d(TAG, "drink selected: $entity")
     }
 
     override fun onVideoUrlSelected(url: String) {
-
+        Log.d(TAG, "video url selected: $url")
     }
 }

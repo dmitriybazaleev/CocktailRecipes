@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentSettingsBinding
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SettingsViewModel
 import kotlinx.coroutines.Job
@@ -38,16 +38,14 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
     }
 
     private fun addListener() {
-        binding?.scNightMode?.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateNightMode(isChecked)
+        binding?.txvSelectLanguage?.setOnClickListener {
+            addFragment(R.id.action_settingsFragment_to_selectLanguageFragment)
         }
     }
 
     private fun addStateObserver() {
         viewModel.settingsLiveData.observe(viewLifecycleOwner) { state ->
-            if (binding?.scNightMode?.isChecked != state.isNightMode) {
-                binding?.scNightMode?.isChecked = state.isNightMode
-            }
+
         }
     }
 

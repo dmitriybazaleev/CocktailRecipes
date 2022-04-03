@@ -5,5 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SettingsState(
-    var isNightMode: Boolean = false
+    var language: String? = null
 ) : Parcelable

@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:toolbarText="@string/main" />
+        app:toolbarText="@string/home" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_home"
@@ -122,16 +122,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.baza.cocktailrecipe.presentation.widget.PlaceholderView
-        android:id="@+id/pv_home"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:placeholderLottieRaw="@raw/lottie_connection_lost"
-        app:placeholderText="@string/check_internet_connection" />
+<!--    <com.baza.cocktailrecipe.presentation.widget.PlaceholderView-->
+<!--        android:id="@+id/pv_home"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:placeholderLottieRaw="@raw/lottie_connection_lost"-->
+<!--        app:placeholderText="@string/check_internet_connection" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

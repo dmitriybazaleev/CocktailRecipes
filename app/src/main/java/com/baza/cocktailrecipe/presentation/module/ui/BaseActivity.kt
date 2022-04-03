@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.baza.cocktailrecipe.presentation.module.ui.fragments.BaseFragment
 import com.baza.cocktailrecipe.presentation.navigation.NavigationController
 import com.baza.cocktailrecipe.presentation.navigation.Navigator
 
@@ -36,5 +37,16 @@ abstract class BaseActivity<B : ViewBinding> : AppCompatActivity() {
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = navigator?.getCurrentFragment()
+        if (currentFragment is BaseFragment<*>) {
+            val handled = currentFragment.onBackPressed()
+
+            if (!handled) {
+                super.onBackPressed()
+            }
+        }
     }
 }

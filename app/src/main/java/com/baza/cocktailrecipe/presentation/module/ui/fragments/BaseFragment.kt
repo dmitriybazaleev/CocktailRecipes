@@ -15,12 +15,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
+import com.baza.cocktailrecipe.presentation.module.ui.BackPressedHandler
 import com.baza.cocktailrecipe.presentation.module.ui.MainActivity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.BaseViewModel
 import com.baza.cocktailrecipe.presentation.navigation.NavArguments
 
-abstract class BaseFragment<B : ViewBinding> : Fragment() {
+abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
 
     companion object {
         private const val TAG = "baseFragment"
@@ -170,10 +171,14 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         *argument
     )
 
+    fun getCurrentFragment() = act?.navigator?.getCurrentFragment()
+
     fun getController(): NavController? = act?.navigator?.getController()
 
 
     fun popBackstack() = act?.navigator?.popBackStack()
+
+    override fun onBackPressed(): Boolean = false
 
     abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> B
 }

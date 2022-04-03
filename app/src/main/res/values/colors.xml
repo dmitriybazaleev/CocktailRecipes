@@ -15,4 +15,6 @@
     <color name="status_bar_semi_transparent">#1E000000</color>
     <color name="pure_red">#33FD3A69</color>
     <color name="violet">#488CF2</color>
+    <color name="grey_disabled">#b9b9b9</color>
+    <color name="dark_red">#990032</color>
 </resources>

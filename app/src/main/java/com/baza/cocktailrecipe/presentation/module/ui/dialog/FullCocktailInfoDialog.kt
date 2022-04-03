@@ -16,6 +16,12 @@ import com.baza.cocktailrecipe.presentation.module.ui.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
+/**
+ * Данный диалог будет показывать полную информацию о коктейле / ингредиентах
+ * Диалог будет отображать:
+ * 1-Картинку коктейлей
+ * 2-Полное описание ингредиента
+ */
 class FullCocktailInfoDialog : BottomSheetDialogFragment() {
 
     companion object {
@@ -23,7 +29,6 @@ class FullCocktailInfoDialog : BottomSheetDialogFragment() {
 
         const val DRINK_PARAMS_KEY = "drinkParamsKey"
         const val INGREDIENT_PARAMS_KEY = "ingredientParamsKey"
-
 
         @JvmStatic
         fun create(drinkEntity: DrinkEntity): FullCocktailInfoDialog {
@@ -102,6 +107,7 @@ class FullCocktailInfoDialog : BottomSheetDialogFragment() {
                 binding?.txvFullCocktailDescr?.setTextOrHide(drinkEntity?.strInstruction)
                 binding?.txvFullCocktailAlcoholic?.setTextOrHide(drinkEntity?.strAlcoholic)
                 binding?.txvFullCocktailCategory?.setTextOrHide(drinkEntity?.strCategory)
+                updateTitle(context?.getString(R.string.cocktail_details))
 
             }
             if (args[INGREDIENT_PARAMS_KEY] != null) {
@@ -113,7 +119,14 @@ class FullCocktailInfoDialog : BottomSheetDialogFragment() {
                 binding?.txvFullCocktailDescr?.setTextOrHide(ingredientEntity?.strDescription)
                 binding?.txvFullCocktailAlcoholic?.setTextOrHide(ingredientEntity?.strAlcohol)
                 binding?.txvFullCocktailCategory?.setTextOrHide(ingredientEntity?.strType)
+                updateTitle(context?.getString(R.string.ingredient_details))
             }
+        }
+    }
+
+    private fun updateTitle(title: String?) {
+        title?.let { cocktailTitle ->
+            binding?.txvFullCocktailLabel?.text = cocktailTitle
         }
     }
 }

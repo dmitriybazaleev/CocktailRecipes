@@ -20,7 +20,7 @@ interface CocktailApi {
 
     // Lookup full cocktail details by id
     @GET(LOOK_UP_METHOD)
-    suspend fun lookupFullCocktailDetails(@Query("i") details: Int)
+    suspend fun lookupFullCocktailDetails(@Query("i") details: String): JsonObject
 
     // Lookup ingredient by ID
     @GET(LOOK_UP_METHOD)
@@ -32,5 +32,5 @@ interface CocktailApi {
 
     // Search by ingredient
     @GET(FILTER_METHOD)
-    suspend fun filterByIngredient(@Query("i") ingredient: String)
+    suspend fun filterByIngredient(@Query("i") ingredient: String): JsonObject
 }

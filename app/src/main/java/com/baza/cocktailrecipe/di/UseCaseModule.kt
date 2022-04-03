@@ -1,12 +1,10 @@
 package com.baza.cocktailrecipe.di
 
+import android.content.Context
 import com.baza.cocktailrecipe.presentation.module.data.api.CocktailApi
 import com.baza.cocktailrecipe.presentation.module.data.room.DrinksDao
 import com.baza.cocktailrecipe.presentation.module.data.room.IngredientDao
-import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
-import com.baza.cocktailrecipe.presentation.module.domain.SavedUseCase
-import com.baza.cocktailrecipe.presentation.module.domain.SearchByIngredientUseCase
-import com.baza.cocktailrecipe.presentation.module.domain.SearchByNameUseCase
+import com.baza.cocktailrecipe.presentation.module.domain.*
 import dagger.Module
 import dagger.Provides
 
@@ -36,4 +34,9 @@ class UseCaseModule {
         api: CocktailApi,
         dao: IngredientDao
     ): SearchByIngredientUseCase = SearchByIngredientUseCase(api, dao)
+
+    @Provides
+    fun provideSelectLanguagesUseCase(
+        appContext: Context
+    ) = SelectLanguageUseCase(appContext)
 }

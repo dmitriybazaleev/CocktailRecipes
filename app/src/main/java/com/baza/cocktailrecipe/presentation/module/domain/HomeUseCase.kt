@@ -26,6 +26,6 @@ class HomeUseCase @Inject constructor(
      * Данный запрос уходит на получение подробных данных о коктейле
      */
     suspend fun getCocktailById(
-        cocktailId: Int
+        cocktailId: String
     ) = api.lookupFullCocktailDetails(cocktailId)
 }

@@ -135,16 +135,12 @@ class SearchByNameAdapter constructor(
         override fun areItemsTheSame(
             oldItem: SearchNameUiEntity,
             newItem: SearchNameUiEntity
-        ): Boolean {
-            return oldItem == newItem
-        }
+        ): Boolean = oldItem == newItem
 
         override fun areContentsTheSame(
             oldItem: SearchNameUiEntity,
             newItem: SearchNameUiEntity
-        ): Boolean {
-            return oldItem.compare(newItem)
-        }
+        ): Boolean = oldItem.compare(newItem)
 
     }
 
@@ -215,7 +211,7 @@ class SearchByNameAdapter constructor(
                     val x = (item.right - 60.dp).toFloat()
                     val y = (item.top + item.height / 1.8).toFloat()
                     c.drawText(
-                        "Удалить",
+                        item.context.getString(R.string.remove),
                         x,
                         y,
                         getDefaultPaintStyle()

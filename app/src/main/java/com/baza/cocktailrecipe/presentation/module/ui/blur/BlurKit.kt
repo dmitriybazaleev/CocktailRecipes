@@ -17,7 +17,8 @@ object BlurKit {
     private var rs: RenderScript? = null
 
     fun create(context: Context) {
-        rs = RenderScript.create(context.applicationContext)
+        if (rs == null)
+            rs = RenderScript.create(context.applicationContext)
     }
 
     fun blur(src: Bitmap?, radius: Int): Bitmap? {

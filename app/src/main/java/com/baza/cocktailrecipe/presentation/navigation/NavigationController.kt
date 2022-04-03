@@ -3,6 +3,7 @@ package com.baza.cocktailrecipe.presentation.navigation
 import android.os.Bundle
 import android.util.Log
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -18,13 +19,14 @@ class NavigationController(
     }
 
     private var navController: NavController? = null
+    private var navHostFragment: NavHostFragment? = null
 
     init {
         initBase()
     }
 
     private fun initBase() {
-        val navHostFragment = fm.findFragmentById(R.id.fcv_main) as? NavHostFragment
+        navHostFragment = fm.findFragmentById(R.id.fcv_main) as? NavHostFragment
         navHostFragment?.let { hostFragment ->
             navController = hostFragment.navController
         }
@@ -56,7 +58,7 @@ class NavigationController(
             }
         }
 
-        navController?.navigate(destinationId, null,  navOption)
+        navController?.navigate(destinationId, null, navOption)
     }
 
     override fun addFragment(
@@ -69,18 +71,18 @@ class NavigationController(
     ) {
 
 
-       val navOption = navOptions {
-           anim {
-               enter = enterAnim
-               exit = exitAnim
-               popEnter = popEnterAnim
-               popExit = popExitAnim
-           }
-       }
-       val arguments = getArgument(*args)
+        val navOption = navOptions {
+            anim {
+                enter = enterAnim
+                exit = exitAnim
+                popEnter = popEnterAnim
+                popExit = popExitAnim
+            }
+        }
+        val arguments = getArgument(*args)
 
 
-       navController?.navigate(destinationId, arguments, navOption)
+        navController?.navigate(destinationId, arguments, navOption)
     }
 
     override fun popBackStack() {
@@ -105,6 +107,9 @@ class NavigationController(
     }
 
     override fun getController(): NavController? = navController
+
+    override fun getCurrentFragment(): Fragment? =
+        navHostFragment?.childFragmentManager?.fragments?.get(0)
 
 
 }

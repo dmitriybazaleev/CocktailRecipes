@@ -8,7 +8,6 @@ import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.api.INGREDIENTS
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByIngredientUseCase
-import com.baza.cocktailrecipe.presentation.module.ui.event.ErrorEvent
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchIngredientEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
@@ -195,7 +194,6 @@ class SearchByIngredientViewModel : BaseViewModel() {
     private suspend fun onHandleException(e: Exception) {
         when (e) {
             is UnknownHostException -> {
-
             }
             is HttpException -> {
 

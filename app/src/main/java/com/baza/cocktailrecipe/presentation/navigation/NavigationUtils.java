@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.lang.ref.WeakReference;
 
+
 public final class NavigationUtils {
 
     public static final String TAG = "navUtils";
@@ -75,8 +76,10 @@ public final class NavigationUtils {
         return currentDestination.getId() == destId;
     }
 
-    public static boolean onNavDestinationSelected(@NonNull MenuItem item,
-                                                   @NonNull NavController navController) {
+    public static boolean onNavDestinationSelected(
+            @NonNull MenuItem item,
+            @NonNull NavController navController
+    ) {
         NavOptions.Builder builder = new NavOptions.Builder()
                 .setLaunchSingleTop(true);
         if (navController.getCurrentDestination().getParent().findNode(item.getItemId())
@@ -93,8 +96,8 @@ public final class NavigationUtils {
                     .setPopExitAnim(R.animator.nav_default_pop_exit_anim);
         }
         if ((item.getOrder() & Menu.CATEGORY_SECONDARY) == 0) {
-            builder.setPopUpTo(findStartDestination(navController.getGraph()).getId(),
-                    false);
+            builder.setPopUpTo(findStartDestination(
+                    navController.getGraph()).getId(), false);
         }
         NavOptions options = builder.build();
         try {
