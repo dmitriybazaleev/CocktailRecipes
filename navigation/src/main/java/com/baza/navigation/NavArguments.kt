@@ -1,4 +1,4 @@
-package com.baza.cocktailrecipe.presentation.navigation
+package com.baza.navigation
 
 data class NavArguments(
     val key: String,

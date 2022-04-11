@@ -38,6 +38,6 @@ class LabelHolder constructor(
     }
 
     fun bind(entity: LabelUiEntity) {
-        itemText.text = entity.searchLabel
+        itemText.text = itemView.context?.getString(entity.searchLabelRes)
     }
 }

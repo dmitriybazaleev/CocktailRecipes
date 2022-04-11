@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailRecipe">
         <activity
-            android:name=".presentation.module.ui.MainActivity"
+            android:name=".presentation.module.ui.activity.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

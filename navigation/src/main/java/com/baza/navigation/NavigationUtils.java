@@ -1,12 +1,12 @@
-package com.baza.cocktailrecipe.presentation.navigation;
+package com.baza.navigation;
 
+import androidx.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.ActivityNavigator;
 import androidx.navigation.NavController;
@@ -14,11 +14,9 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavOptions;
 
-import com.baza.cocktailrecipe.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.lang.ref.WeakReference;
-
 
 public final class NavigationUtils {
 

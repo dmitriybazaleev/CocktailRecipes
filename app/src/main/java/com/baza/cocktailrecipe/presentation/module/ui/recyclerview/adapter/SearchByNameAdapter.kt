@@ -24,13 +24,13 @@ import com.baza.cocktailrecipe.presentation.module.ui.sp
 import java.lang.IllegalStateException
 
 fun List<DrinkEntity>.toSearchViewType(
-    labelStr: String,
+    labelRes: Int,
     includeSwipe: Boolean
 ): MutableList<SearchNameUiEntity> {
     val newList = mutableListOf<SearchNameUiEntity>()
 
     if (this.isNotEmpty()) {
-        newList.add(LabelUiEntity(labelStr))
+        newList.add(LabelUiEntity(labelRes))
 
         this.forEach { dataEntity ->
             newList.add(
@@ -53,7 +53,7 @@ fun List<DrinkEntity>.toSearchViewType(
 }
 
 fun List<IngredientEntity>.toSearchType(
-    label: String,
+    labelRes: Int,
     includeSwipe: Boolean
 ): List<SearchNameUiEntity> {
     val listResult = mutableListOf<SearchNameUiEntity>()
@@ -61,7 +61,7 @@ fun List<IngredientEntity>.toSearchType(
     if (this.isNotEmpty()) {
         listResult.add(
             LabelUiEntity(
-                label
+                labelRes
             )
         )
 
@@ -115,7 +115,7 @@ private fun SearchNameUiEntity.compare(newItem: SearchNameUiEntity): Boolean {
         SearchByNameAdapter.SearchViewType.SEARCH_TEXT_TYPE -> {
             val newModel = newItem as? LabelUiEntity
             val oldModel = this as? LabelUiEntity
-            newModel?.searchLabel == oldModel?.searchLabel
+            newModel?.searchLabelRes == oldModel?.searchLabelRes
         }
         SearchByNameAdapter.SearchViewType.SEARCH_RESULT_TYPE -> {
             val newModel = newItem as? DrinkUiEntitySearch

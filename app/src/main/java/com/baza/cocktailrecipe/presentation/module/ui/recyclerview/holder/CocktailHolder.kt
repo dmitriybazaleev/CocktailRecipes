@@ -21,10 +21,8 @@ class CocktailHolder constructor(
     private val mCocktailDescription =
         itemView.findViewById<TextView>(R.id.txv_cocktail_description)
     private val mCocktailImage = itemView.findViewById<ImageView>(R.id.imv_cocktail)
-    private val mCocktailVideoUrl = itemView.findViewById<TextView>(R.id.txv_cocktail_video)
 
     fun bind(itemEntity: DrinkEntity) {
-        mCocktailVideoUrl.isVisible = itemEntity.strVideo != null
         mCocktailDrinkName.setTextOrHide(itemEntity.strDrink)
         mCocktailCategory.setTextOrHide(itemEntity.strCategory)
         mCocktailDescription.setTextOrHide(itemEntity.strInstruction)
@@ -34,13 +32,9 @@ class CocktailHolder constructor(
             itemObserver?.onItemClicked(entity = itemEntity)
         }
 
-        mCocktailVideoUrl?.setOnClickListener {
-            itemObserver?.onVideoUrlSelected(itemEntity.strVideo ?: "")
-        }
     }
 
     interface CocktailItemObserver {
         fun onItemClicked(entity: DrinkEntity)
-        fun onVideoUrlSelected(url: String)
     }
 }

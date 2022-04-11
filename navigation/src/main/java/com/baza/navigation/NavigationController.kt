@@ -1,17 +1,18 @@
-package com.baza.cocktailrecipe.presentation.navigation
+package com.baza.navigation
 
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.baza.cocktailrecipe.R
 
 class NavigationController(
-    private val fm: FragmentManager
+    private val fm: FragmentManager,
+    @IdRes private val navHostFragmentId: Int
 ) : Navigator {
 
     companion object {
@@ -26,7 +27,7 @@ class NavigationController(
     }
 
     private fun initBase() {
-        navHostFragment = fm.findFragmentById(R.id.fcv_main) as? NavHostFragment
+        navHostFragment = fm.findFragmentById(navHostFragmentId) as? NavHostFragment
         navHostFragment?.let { hostFragment ->
             navController = hostFragment.navController
         }

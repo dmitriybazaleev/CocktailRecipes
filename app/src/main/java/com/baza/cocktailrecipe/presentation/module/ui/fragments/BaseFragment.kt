@@ -12,14 +12,12 @@ import androidx.annotation.AnimRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
 import com.baza.cocktailrecipe.presentation.module.ui.BackPressedHandler
-import com.baza.cocktailrecipe.presentation.module.ui.MainActivity
+import com.baza.cocktailrecipe.presentation.module.ui.activity.MainActivity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
-import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.BaseViewModel
-import com.baza.cocktailrecipe.presentation.navigation.NavArguments
+import com.baza.navigation.NavArguments
 
 abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
 
@@ -35,7 +33,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
     protected val act: MainActivity?
         get() = _act
 
-    private val viewModel by viewModels<BaseViewModel>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -85,7 +82,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
         negativeButtonText: Int,
         negativeButtonAction: ((v: View) -> Unit)? = null
     ) {
-        showToast("privet")
         ActionDialog.Builder(requireContext(), childFragmentManager)
             .setLabel(titleRes)
             .setMessage(messageRes)
@@ -127,10 +123,10 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
         AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton(positiveButtonText) { dialog, which ->
+            .setPositiveButton(positiveButtonText) { _, _ ->
                 positiveButtonAction?.invoke()
             }
-            .setNegativeButton(negativeButtonText) { dialog, which ->
+            .setNegativeButton(negativeButtonText) { _, _ ->
                 negativeButtonAction?.invoke()
             }
             .show()
@@ -170,6 +166,8 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
         popExitAnim,
         *argument
     )
+
+    fun getNavController() = act?.navigator?.getController()
 
     fun getCurrentFragment() = act?.navigator?.getCurrentFragment()
 

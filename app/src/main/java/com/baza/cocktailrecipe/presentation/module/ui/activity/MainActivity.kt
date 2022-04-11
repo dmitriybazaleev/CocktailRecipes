@@ -1,18 +1,19 @@
-package com.baza.cocktailrecipe.presentation.module.ui
+package com.baza.cocktailrecipe.presentation.module.ui.activity
 
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.ActivityMainBinding
-import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
-import com.baza.cocktailrecipe.presentation.navigation.attachController
+import com.baza.cocktailrecipe.presentation.module.ui.setAppLanguage
+import com.baza.navigation.NavigationController
+import com.baza.navigation.Navigator
+import com.baza.navigation.attachController
 
 /**
  * Тестовое приложение, которое представляет функционал:
@@ -24,15 +25,21 @@ import com.baza.cocktailrecipe.presentation.navigation.attachController
  */
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
+    var navigator: Navigator? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNavigation()
         initLightStatusBar()
-        attachController()
+        updateAppLanguage()
     }
 
-    private fun attachController() {
-        binding?.bnvMain?.attachController(navigator?.getController())
+    private fun createNavigation() {
+        navigator = NavigationController(supportFragmentManager, R.id.fcv_main)
+        binding?.bnvMain?.attachController(navController = navigator?.getController())
     }
+
+    private fun updateAppLanguage() = setAppLanguage(PreferencesCache.language)
 
     fun isShowBottomNav(isShow: Boolean) {
         if (binding?.bnvMain?.isVisible != isShow) {

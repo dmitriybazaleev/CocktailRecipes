@@ -1,14 +1,10 @@
-package com.baza.cocktailrecipe.presentation.navigation
+package com.baza.navigation
 
 import androidx.annotation.AnimRes
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 
-/**
- * Интерфейс для работы с навигацией
- * Реализован в [NavigationController]
- */
 interface Navigator {
 
     /**

@@ -28,13 +28,8 @@ class LauncherFragment : BaseFragment<FragmentLauncherBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        applyAppLanguage()
         observerViewEvent()
         observeState()
-    }
-
-    private fun applyAppLanguage() {
-        act?.setAppLanguage(PreferencesCache.language)
     }
 
     private fun observeState() {

@@ -13,16 +13,18 @@ class SearchAdapter constructor(
     companion object {
         const val MAX_FRAGMENTS = 2
 
+        const val SEARCH_BY_NAME_POSITION = 0
+        const val SEARCH_BY_INGREDIENT_POSITION = 1
     }
 
     override fun getItemCount(): Int = MAX_FRAGMENTS
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> {
+            SEARCH_BY_NAME_POSITION -> {
                 SearchByNameFragment.create()
             }
-            1 ->
+            SEARCH_BY_INGREDIENT_POSITION ->
                 SearchByIngredientFragment.create()
 
             else -> throw IllegalStateException("Unknown position")

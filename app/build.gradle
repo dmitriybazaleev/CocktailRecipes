@@ -95,4 +95,6 @@ dependencies {
 
     // Lottie
     implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    api project(path: ':navigation')
 }

@@ -146,7 +146,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
         mJob?.cancel()
     }
 
-    override fun onItemClicked(item: DrinkUiEntitySearch) {
+    override fun onItemClicked(item: DrinkUiEntitySearch, itemPosition: Int) {
         if (item.isSavedList) {
             /**
              * Текущие данные, которые показывает список из Room
@@ -158,7 +158,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
              * Текущее данные, которые показывает список из сервера
              * Кэшируем данные в базу
              */
-            viewModel.onInsertClickedCocktails(item)
+            viewModel.onInsertClickedCocktails(item, itemPosition)
         }
     }
 }

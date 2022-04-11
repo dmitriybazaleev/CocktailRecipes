@@ -1,6 +1,7 @@
 package com.baza.cocktailrecipe.presentation.module.ui.viewmodel
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,6 @@ import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchViewType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchNameUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchByNameState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.lang.Exception
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -40,6 +41,9 @@ class SearchByNameViewModel : ViewModel() {
 
     private val _mSearchEvent = MutableSharedFlow<SearchEvent>()
 
+    // Данный ArrayList хранит данные коктейлей из Room
+    private val mSavedCocktailList = mutableListOf<DrinkEntity>()
+
     val searchEvent: SharedFlow<SearchEvent>
         get() = _mSearchEvent.asSharedFlow()
 
@@ -48,7 +52,7 @@ class SearchByNameViewModel : ViewModel() {
 
     init {
         App.appComponent?.inject(this)
-        getSavedCocktails()
+        getSavedCocktailsDatabase()
     }
 
     companion object {
@@ -73,8 +77,11 @@ class SearchByNameViewModel : ViewModel() {
                             response.getAsJsonArray(DRINKS), type
                         )
                         Log.d(TAG, "response entity: $response")
-                        mState.searchResult = responseEntity
-                            .toSearchViewType("Результат поиска", false)
+                        setCurrentListState(
+                            responseEntity,
+                            R.string.search_result,
+                            false
+                        )
 
                     } else {
                         Log.d(TAG, "nothing has been found")
@@ -101,7 +108,7 @@ class SearchByNameViewModel : ViewModel() {
     private suspend fun onHandleException(t: Throwable) {
         when (t) {
             is UnknownHostException -> {
-                _mSearchEvent.emit(
+                emitEvent(
                     SearchEvent.DialogEvent(
                         titleRes = R.string.error,
                         messageRes = R.string.check_internet_connection,
@@ -110,7 +117,7 @@ class SearchByNameViewModel : ViewModel() {
                 )
             }
             is SocketTimeoutException -> {
-                _mSearchEvent.emit(
+                emitEvent(
                     SearchEvent.DialogEvent(
                         titleRes = R.string.error,
                         messageRes = R.string.something_went_wrong,
@@ -119,7 +126,7 @@ class SearchByNameViewModel : ViewModel() {
                 )
             }
             is HttpException -> {
-                _mSearchEvent.emit(
+                emitEvent(
                     SearchEvent.DialogEvent(
                         titleRes = R.string.error,
                         messageRes = R.string.network_error,
@@ -130,15 +137,18 @@ class SearchByNameViewModel : ViewModel() {
         }
     }
 
-    fun getSavedCocktails() {
-        onClearCurrentList()
+    private fun getSavedCocktailsDatabase() {
+        onClearState()
         viewModelScope.launch(Dispatchers.IO) {
             searchByNameUseCase.getSavedDrinks(
                 onSuccess = { response ->
                     Log.d(TAG, "saved drinks: $response")
                     if (response.isNotEmpty()) {
-                        mState.searchResult = response.toSearchViewType(
-                            "История поиска",
+                        mSavedCocktailList.addAll(response)
+
+                        setCurrentListState(
+                            mSavedCocktailList,
+                            R.string.search_history,
                             true
                         )
 
@@ -157,32 +167,72 @@ class SearchByNameViewModel : ViewModel() {
         }
     }
 
+    fun getSavedCocktails() {
+        setCurrentListState(
+            mSavedCocktailList,
+            R.string.search_history,
+            true
+        )
+
+        updateUi()
+    }
+
+    /**
+     * Данный метод обновляет текущее состояние списка
+     * @param newList - Данные коктейлей из Room / результата поиска
+     * @param labelRes - label res, который будет добавлять ViewType header
+     * @param includeSwipe - Будет ли активен ItemTouchHelper в списке
+     */
+    private fun setCurrentListState(
+        newList: List<DrinkEntity>,
+        @StringRes labelRes: Int,
+        includeSwipe: Boolean
+    ) {
+        mState.searchResult = newList.toSearchViewType(labelRes, includeSwipe)
+    }
+
+    /**
+     * Устанавливает состояние ProgressBar
+     */
     private fun setProgressState(isShowProgress: Boolean) {
         if (isShowProgress != mState.isShowProgress)
             mState.isShowProgress = isShowProgress
     }
 
+    /**
+     * Устанавливает состояние Placeholder
+     */
     private fun setPlaceholderState(isShowPlaceholder: Boolean) {
         if (isShowPlaceholder != mState.isShowPlaceholder)
             mState.isShowPlaceholder = isShowPlaceholder
     }
 
-    private fun onClearCurrentList() {
+    /**
+     * Данный метод сбрасывает состояние Ui части
+     */
+    private fun onClearState() {
         resetCurrentList()
         setPlaceholderState(false)
         setProgressState(false)
         updateUi()
     }
 
-
-    fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch) {
+    /**
+     * Метод добавляет в Room выбранный коктейль
+     */
+    fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch, itemPosition: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val drinkEntity = clickedItem.toDrinkEntity()
             searchByNameUseCase.onInsertDrink(
                 drinkEntity,
                 onSuccess = {
+                    val result = mSavedCocktailList.find {
+                        it == drinkEntity
+                    }
+                    if (result == null) mSavedCocktailList.add(drinkEntity)
+
                     withContext(Dispatchers.Main) {
-                        _mSearchEvent.emit(
+                        emitEvent(
                             SearchEvent.ShowCocktailEvent(
                                 drinkEntity
                             )
@@ -191,7 +241,7 @@ class SearchByNameViewModel : ViewModel() {
                 },
                 onError = { e ->
                     withContext(Dispatchers.Main) {
-                        _mSearchEvent.emit(
+                        emitEvent(
                             SearchEvent.DialogEvent(
                                 titleRes = R.string.error,
                                 messageRes = R.string.something_went_wrong,
@@ -205,6 +255,9 @@ class SearchByNameViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Сбрасывает текущее состояние списка
+     */
     private fun resetCurrentList() {
         mState.searchResult = mutableListOf()
     }
@@ -220,20 +273,31 @@ class SearchByNameViewModel : ViewModel() {
                 searchByNameUseCase.onRemoveDrink(
                     drink,
                     onSuccess = {
-                        val newList = mutableListOf<SearchNameUiEntity>()
-                        newList.addAll(mState.searchResult)
-                        newList.remove(item)
-                        if (newList.size == 1) {
-                            resetCurrentList()
+                        try {
+                            mSavedCocktailList.remove(item.toDrinkEntity())
 
-                        } else {
-                            mState.searchResult = newList
+                            /**
+                             * Если текущий список показывает только label, то очищаем весь список
+                             */
+                            if (mState.searchResult.size == 1) {
+                                resetCurrentList()
+
+                            } else {
+                                setCurrentListState(
+                                    mSavedCocktailList,
+                                    R.string.search_history,
+                                    true
+                                )
+                            }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                         updateUiAsync()
                     },
                     onError = { e ->
                         withContext(Dispatchers.Main) {
-                            _mSearchEvent.emit(
+                            emitEvent(
                                 SearchEvent.DialogEvent(
                                     titleRes = R.string.error,
                                     messageRes = R.string.something_went_wrong,

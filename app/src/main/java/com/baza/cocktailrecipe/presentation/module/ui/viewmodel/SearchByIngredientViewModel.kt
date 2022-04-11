@@ -1,17 +1,19 @@
 package com.baza.cocktailrecipe.presentation.module.ui.viewmodel
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.api.INGREDIENTS
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByIngredientUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchIngredientEvent
+import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toIngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.SearchNameUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchIngredientState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -38,9 +40,11 @@ class SearchByIngredientViewModel : BaseViewModel() {
     @Inject
     lateinit var ingredientUseCase: SearchByIngredientUseCase
 
+    private val mSavedIngredients = mutableListOf<IngredientEntity>()
+
     init {
         App.appComponent?.inject(this)
-        getSearchHistory()
+        getSearchHistoryDatabase()
     }
 
     companion object {
@@ -66,8 +70,9 @@ class SearchByIngredientViewModel : BaseViewModel() {
                             object : TypeToken<List<IngredientEntity>>() {}.type
                         )
                         Log.d(TAG, "ingredient list result: $listResult")
-                        mSearchState.searchResult = listResult.toSearchType(
-                            "Результат поиска",
+                        setListIngredientState(
+                            listResult,
+                            R.string.search_result,
                             false
                         )
 
@@ -94,17 +99,48 @@ class SearchByIngredientViewModel : BaseViewModel() {
     }
 
     /**
+     * Данный метод обновляет текущее состояние списка
+     * @param newList - Данные коктейлей из Room / результата поиска
+     * @param labelRes - label res, который будет добавлять ViewType header
+     * @param includeSwipe - Будет ли активен ItemTouchHelper в списке
+     */
+    private fun setListIngredientState(
+        newList: List<IngredientEntity>,
+        @StringRes labelRes: Int,
+        includeSwipe: Boolean
+    ) {
+        mSearchState.searchResult = newList.toSearchType(labelRes, includeSwipe)
+    }
+
+    /**
+     * Данный метод устанавливает в текущий список данные из Room.
+     * Всякий раз, когда юзер закончит ввод текста, то в state будет сетить сохраненный список
+     * из ингредиентов
+     */
+    fun getSavedIngredients() {
+        setListIngredientState(
+            mSavedIngredients,
+            R.string.search_history,
+            true
+        )
+        updateUi()
+    }
+
+    /**
      * Данный метод будет искать все сохраненные игредиенты в Room
      */
-    fun getSearchHistory() {
-        onClearCurrentList()
+    private fun getSearchHistoryDatabase() {
+        onClearState()
         viewModelScope.launch(Dispatchers.IO) {
             ingredientUseCase.getSearchHistory(
                 onSuccess = { savedIngredients ->
                     if (savedIngredients.isNotEmpty()) {
                         Log.d(TAG, "Current saved ingredient: $savedIngredients")
-                        mSearchState.searchResult = savedIngredients.toSearchType(
-                            "История поиска",
+                        mSavedIngredients.addAll(savedIngredients)
+
+                        setListIngredientState(
+                            savedIngredients,
+                            R.string.search_history,
                             true
                         )
 
@@ -130,13 +166,17 @@ class SearchByIngredientViewModel : BaseViewModel() {
      * Данный метод будет добавлять выбранный ингредиент из списка
      * @param item - Выбранный элемент Entity
      */
-    fun insertIngredient(item: IngredientEntity) {
+    fun insertIngredient(item: IngredientEntity, itemPosition: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "clicked item: $item")
             ingredientUseCase.onInsertIngredient(
                 item,
                 onSuccess = {
                     Log.d(TAG, "insert data onSuccess!")
+                    val entity = mSavedIngredients.find {
+                        it == item
+                    }
+                    if (entity == null) mSavedIngredients.add(item)
 
                     withContext(Dispatchers.Main) {
                         emitEvent(
@@ -168,15 +208,27 @@ class SearchByIngredientViewModel : BaseViewModel() {
                 swipedEntity.idDrink,
                 onSuccess = {
                     Log.d(TAG, "Deleted success!")
-                    val newList = mutableListOf<SearchNameUiEntity>()
-                    newList.addAll(mSearchState.searchResult)
-                    newList.remove(swipedEntity)
-                    if (newList.size == 1) {
-                        resetCurrentList()
+                    try {
+                        mSavedIngredients.remove(swipedEntity.toIngredientEntity())
 
-                    } else {
-                        mSearchState.searchResult = newList
+                        /**
+                         * Если текущий список показывает только label, то очищаем весь список
+                         */
+                        if (mSearchState.searchResult.size == 1) {
+                            resetCurrentList()
+
+                        } else {
+                            setListIngredientState(
+                                mSavedIngredients,
+                                R.string.search_history,
+                                true
+                            )
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
+
                     updateUiAsync()
 
                 },
@@ -204,23 +256,36 @@ class SearchByIngredientViewModel : BaseViewModel() {
         }
     }
 
-    private fun onClearCurrentList() {
+    /**
+     * Метод очищает имеющее состояние
+     */
+    private fun onClearState() {
         resetCurrentList()
         setPlaceholderState(false)
         setProgressState(false)
         updateUi()
     }
 
-    fun resetCurrentList() {
+
+    /**
+     * Сбрасывает текущее состояние ArrayList
+     */
+    private fun resetCurrentList() {
         mSearchState.searchResult = mutableListOf()
     }
 
+    /**
+     * Данный метод устанавливает состояние ProgressBar
+     */
     private fun setProgressState(isShowProgress: Boolean) {
         if (isShowProgress != mSearchState.isShowProgress) {
             mSearchState.isShowProgress = isShowProgress
         }
     }
 
+    /**
+     * Данный метод устанавливает состояние Placeholder
+     */
     private fun setPlaceholderState(isShow: Boolean) {
         if (isShow != mSearchState.isShowPlaceholder) {
             mSearchState.isShowPlaceholder = isShow
@@ -236,7 +301,6 @@ class SearchByIngredientViewModel : BaseViewModel() {
     }
 
     private fun updateUiAsync() = _searchIngredientLiveData.postValue(mSearchState)
-
 
     val ingredientEvent: SharedFlow<SearchIngredientEvent>
         get() = _mIngredientEvent

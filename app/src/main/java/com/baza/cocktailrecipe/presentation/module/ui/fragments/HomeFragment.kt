@@ -14,6 +14,7 @@ import com.baza.cocktailrecipe.databinding.FragmentHomeBinding
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.blur.BlurHelper
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
+import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RandomCocktailAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RecommendationAdapter
@@ -34,7 +35,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     private val viewModel by viewModels<HomeViewModel>()
 
     private var eventJob: Job? = null
-
     private val recommendationAdapter = RecommendationAdapter(this)
     private val randomCocktailAdapter = RandomCocktailAdapter(this)
 
@@ -114,10 +114,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     }
 
     override fun onItemClicked(entity: DrinkEntity) {
-        Log.d(TAG, "drink selected: $entity")
-    }
-
-    override fun onVideoUrlSelected(url: String) {
-        Log.d(TAG, "video url selected: $url")
+        FullCocktailInfoDialog.create(entity)
+            .show(childFragmentManager, FullCocktailInfoDialog.TAG)
     }
 }

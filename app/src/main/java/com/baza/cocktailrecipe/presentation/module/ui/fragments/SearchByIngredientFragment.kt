@@ -8,12 +8,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.baza.cocktailrecipe.databinding.FragmentSearchByIngredientBinding
-import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchIngredientEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
-import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toIngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder
@@ -86,7 +84,7 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
 
                     } else {
                         // Clear current list
-                        viewModel.getSearchHistory()
+                        viewModel.getSavedIngredients()
                     }
                 }
             }
@@ -126,13 +124,13 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
         }
     }
 
-    override fun onItemClicked(item: DrinkUiEntitySearch) {
+    override fun onItemClicked(item: DrinkUiEntitySearch, itemPosition: Int) {
         val selectedIngredientEntity = item.toIngredientEntity()
         if (item.isSavedList) {
             showFullCocktailInfoDialog(selectedIngredientEntity)
 
         } else {
-            viewModel.insertIngredient(selectedIngredientEntity)
+            viewModel.insertIngredient(selectedIngredientEntity, itemPosition)
         }
     }
 }

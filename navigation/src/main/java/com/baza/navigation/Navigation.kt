@@ -1,4 +1,4 @@
-package com.baza.cocktailrecipe.presentation.navigation
+package com.baza.navigation
 
 import androidx.navigation.NavController
 import com.google.android.material.bottomnavigation.BottomNavigationView

@@ -77,13 +77,9 @@ class FullCocktailInfoDialog : BottomSheetDialogFragment() {
         binding?.ibCocktailDialogClose?.setOnClickListener {
             dismiss()
         }
-    }
 
-    fun setOnButtonClickListener(
-        action: (v: View) -> Unit
-    ) {
-        binding?.btnFullCocktailSave?.setOnClickListener { view ->
-            action.invoke(view)
+        binding?.btnFullCocktailSave?.setOnClickListener {
+            // Nothing to do..
             dismiss()
         }
     }

@@ -10,6 +10,7 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.TAG
+import com.baza.cocktailrecipe.presentation.module.ui.getGeneratedLetter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRecommendationEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.HomeState
 import com.google.gson.Gson
@@ -45,13 +46,12 @@ class HomeViewModel : BaseViewModel() {
             } else {
                 setProgressState(true)
             }
-            setPlaceholderState(false)
             updateUiAsync()
 
             try {
                 val randomList = homeUseCase.getRandomCocktail()
                 val byLetterList =
-                    homeUseCase.getCocktailsByLetter(getGeneratedChar().toString())
+                    homeUseCase.getCocktailsByLetter(getGeneratedLetter())
 
                 if (!randomList.get(DRINKS).isJsonNull && !byLetterList.get(DRINKS).isJsonNull) {
                     val randomCocktails = Gson().fromJson<List<DrinkEntity>>(
@@ -74,8 +74,7 @@ class HomeViewModel : BaseViewModel() {
 
                 } else {
                     Log.d(TAG, "response is unsuccessful")
-                    resetCurrentData()
-                    setPlaceholderState(true)
+//                    resetCurrentData()
                 }
 
             } catch (e: Exception) {
@@ -103,20 +102,21 @@ class HomeViewModel : BaseViewModel() {
         _mHomeEvent.emit(homeEvent)
     }
 
+
     private suspend fun onHandleError(e: Exception) {
         when (e) {
             is HttpException -> {
                 Log.d(TAG, "http exception! code: ${e.code()}, message: ${e.message}")
             }
             is UnknownHostException -> {
-                _mHomeEvent.emit(
+                emitEvent(
                     HomeEvent.NetworkError(
                         "Ошибка", "Проверьте подключение интернета!"
                     )
                 )
             }
             is SocketTimeoutException -> {
-                _mHomeEvent.emit(
+                emitEvent(
                     HomeEvent.NetworkError(
                         "Ошибка",
                         "Попробуйте попытку позже"
@@ -126,25 +126,10 @@ class HomeViewModel : BaseViewModel() {
         }
     }
 
-    private val mGeneratedStr = ('a'..'z').random().toString()
-
     private fun setProgressState(isShow: Boolean) {
         if (mHomeState.isShowProgress != isShow)
             mHomeState.isShowProgress = isShow
     }
-
-    private fun setPlaceholderState(isShowPlaceholder: Boolean) {
-        if (mHomeState.isShowPlaceholder != isShowPlaceholder)
-            mHomeState.isShowPlaceholder = isShowPlaceholder
-    }
-
-    private fun getGeneratedChar(): Char {
-        val alphabet = "abcdefghijklmnopqrstuvwxyz"
-        val randomIndex = (Math.random() * alphabet.length).toInt()
-
-        return alphabet[randomIndex]
-    }
-
 
     private fun setSwipeState(isSwiped: Boolean) {
         if (mHomeState.isRefreshing != isSwiped)

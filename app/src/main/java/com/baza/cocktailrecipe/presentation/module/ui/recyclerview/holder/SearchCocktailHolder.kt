@@ -22,11 +22,11 @@ class SearchCocktailHolder constructor(
         mCocktailImage.loadCircleImage(entity.strDrinkThumb, R.drawable.icn_drink_placeholder)
 
         itemView.setOnClickListener {
-            itemObserver?.onItemClicked(entity)
+            itemObserver?.onItemClicked(entity, adapterPosition)
         }
     }
 
     interface ItemObserver {
-        fun onItemClicked(item: DrinkUiEntitySearch)
+        fun onItemClicked(item: DrinkUiEntitySearch, itemPosition: Int)
     }
 }
