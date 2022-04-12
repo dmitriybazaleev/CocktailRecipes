@@ -4,33 +4,29 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.api.DRINKS
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByNameUseCase
+import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
+import com.baza.cocktailrecipe.presentation.module.ui.fromJsonArray
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toDrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchViewType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchByNameState
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import java.lang.Exception
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
-class SearchByNameViewModel : ViewModel() {
+class SearchByNameViewModel : BaseViewModel() {
 
     private val _searchByNameLiveData = MutableLiveData<SearchByNameState>()
 
@@ -72,16 +68,20 @@ class SearchByNameViewModel : ViewModel() {
                 name = query,
                 onSuccess = { response ->
                     if (!response.get(DRINKS).isJsonNull) {
-                        val type = object : TypeToken<List<DrinkEntity>>() {}.type
-                        val responseEntity: List<DrinkEntity> = Gson().fromJson(
-                            response.getAsJsonArray(DRINKS), type
-                        )
                         Log.d(TAG, "response entity: $response")
-                        setCurrentListState(
-                            responseEntity,
-                            R.string.search_result,
-                            false
-                        )
+
+                        val listResult = response.fromJsonArray<DrinkEntity>(DRINKS)
+                        Log.d(TAG, "list result size: ${listResult?.size}")
+                        listResult?.let { searchResult ->
+                            Log.d(TAG, "from json is success!")
+                            setCurrentListState(
+                                searchResult,
+                                R.string.search_result,
+                                false
+                            )
+                        } ?: run {
+                            Log.d(TAG, "from json is unsuccessful")
+                        }
 
                     } else {
                         Log.d(TAG, "nothing has been found")
@@ -98,42 +98,10 @@ class SearchByNameViewModel : ViewModel() {
                     updateUiAsync()
 
                     withContext(Dispatchers.Main) {
-                        onHandleException(e)
+                        showErrorDialogByException(e)
                     }
                 }
             )
-        }
-    }
-
-    private suspend fun onHandleException(t: Throwable) {
-        when (t) {
-            is UnknownHostException -> {
-                emitEvent(
-                    SearchEvent.DialogEvent(
-                        titleRes = R.string.error,
-                        messageRes = R.string.check_internet_connection,
-                        negativeButtonTextRes = R.string.cancel,
-                    )
-                )
-            }
-            is SocketTimeoutException -> {
-                emitEvent(
-                    SearchEvent.DialogEvent(
-                        titleRes = R.string.error,
-                        messageRes = R.string.something_went_wrong,
-                        negativeButtonTextRes = R.string.cancel,
-                    )
-                )
-            }
-            is HttpException -> {
-                emitEvent(
-                    SearchEvent.DialogEvent(
-                        titleRes = R.string.error,
-                        messageRes = R.string.network_error,
-                        negativeButtonTextRes = R.string.cancel,
-                    )
-                )
-            }
         }
     }
 
@@ -167,6 +135,9 @@ class SearchByNameViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Данный метод сетит в State сохраненный список из Room
+     */
     fun getSavedCocktails() {
         setCurrentListState(
             mSavedCocktailList,
@@ -220,7 +191,7 @@ class SearchByNameViewModel : ViewModel() {
     /**
      * Метод добавляет в Room выбранный коктейль
      */
-    fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch, itemPosition: Int) {
+    fun onInsertClickedCocktails(clickedItem: DrinkUiEntitySearch) {
         viewModelScope.launch(Dispatchers.IO) {
             val drinkEntity = clickedItem.toDrinkEntity()
             searchByNameUseCase.onInsertDrink(
@@ -241,11 +212,11 @@ class SearchByNameViewModel : ViewModel() {
                 },
                 onError = { e ->
                     withContext(Dispatchers.Main) {
-                        emitEvent(
-                            SearchEvent.DialogEvent(
-                                titleRes = R.string.error,
-                                messageRes = R.string.something_went_wrong,
-                                negativeButtonTextRes = R.string.ok
+                        emitBaseEvent(
+                            BaseEvent.ActionDialogEventRes(
+                                title = R.string.error,
+                                message = R.string.something_went_wrong,
+                                negativeButtonText = R.string.ok
                             )
                         )
                     }
@@ -297,11 +268,11 @@ class SearchByNameViewModel : ViewModel() {
                     },
                     onError = { e ->
                         withContext(Dispatchers.Main) {
-                            emitEvent(
-                                SearchEvent.DialogEvent(
-                                    titleRes = R.string.error,
-                                    messageRes = R.string.something_went_wrong,
-                                    negativeButtonTextRes = R.string.ok
+                            emitBaseEvent(
+                                BaseEvent.ActionDialogEventRes(
+                                    title = R.string.error,
+                                    message = R.string.something_went_wrong,
+                                    negativeButtonText = R.string.ok
                                 )
                             )
                         }

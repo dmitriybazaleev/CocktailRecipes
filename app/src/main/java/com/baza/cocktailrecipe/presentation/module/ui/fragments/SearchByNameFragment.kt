@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentSearchByNameBinding
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
-import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.SearchByNameAdapter
@@ -19,16 +17,12 @@ import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkU
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.SearchCocktailHolder
 import com.baza.cocktailrecipe.presentation.module.ui.textChanges
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SearchByNameViewModel
-import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SearchViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 
 class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     SearchCocktailHolder.ItemObserver {
 
-    private val rootViewModel by viewModels<SearchViewModel>(
-        ownerProducer = { requireParentFragment() }
-    )
     private val viewModel by viewModels<SearchByNameViewModel>()
 
     private val mSearchAdapter = SearchByNameAdapter(this)
@@ -45,6 +39,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpWithBaseViewModel(viewModel)
         addStateObserver()
         setUpRecycler()
         initListeners()
@@ -55,21 +50,6 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
         viewModel.searchEvent
             .onEach { event ->
                 when (event) {
-                    is SearchEvent.DialogEvent -> {
-                        ActionDialog.Builder(requireContext(), childFragmentManager)
-                            .setLabel(event.titleRes)
-                            .setMessage(event.messageRes)
-                            .setNegativeButton(
-                                event.negativeButtonTextRes,
-                                event.negativeButtonAction
-                            )
-                            .setIcon(R.drawable.icn_error)
-                            .setPositiveButton(
-                                event.positiveButtonTextRes,
-                                event.positiveButtonAction
-                            )
-                            .show()
-                    }
                     is SearchEvent.ShowCocktailEvent -> {
                         showCocktailInfoDialog(entity = event.selectedEntity)
                     }
@@ -158,7 +138,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
              * Текущее данные, которые показывает список из сервера
              * Кэшируем данные в базу
              */
-            viewModel.onInsertClickedCocktails(item, itemPosition)
+            viewModel.onInsertClickedCocktails(item)
         }
     }
 }

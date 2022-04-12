@@ -9,15 +9,22 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AnimRes
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
+import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.module.ui.BackPressedHandler
 import com.baza.cocktailrecipe.presentation.module.ui.activity.MainActivity
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
+import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
+import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.BaseViewModel
 import com.baza.navigation.NavArguments
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
 
@@ -32,6 +39,8 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
     private var _act: MainActivity? = null
     protected val act: MainActivity?
         get() = _act
+
+    private var baseViewModel: BaseViewModel? = null
 
 
     override fun onAttach(context: Context) {
@@ -54,6 +63,51 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
         checkHasBottomNavVisibility()
     }
 
+    protected fun setUpWithBaseViewModel(vm: BaseViewModel) {
+        this.baseViewModel = vm
+
+        initBaseEvent()
+    }
+
+    private fun initBaseEvent() {
+        baseViewModel?.baseEvent
+            ?.onEach { event ->
+                when (event) {
+                    is BaseEvent.ActionDialogEvent -> {
+                        ActionDialog.Builder(requireContext(), childFragmentManager)
+                            .setLabel(event.title)
+                            .setMessage(event.message)
+                            .setNegativeButton(
+                                event.negativeButtonText,
+                                event.negativeButtonAction
+                            )
+                            .setPositiveButton(
+                                event.negativeButtonText,
+                                event.positionButtonAction
+                            )
+                            .setIcon(R.drawable.icn_error)
+                            .show()
+                    }
+                    is BaseEvent.ActionDialogEventRes -> {
+                        ActionDialog.Builder(requireContext(), childFragmentManager)
+                            .setLabel(event.title)
+                            .setMessage(event.message)
+                            .setNegativeButton(
+                                event.negativeButtonText ?: -1,
+                                event.negativeButtonAction
+                            )
+                            .setPositiveButton(
+                                event.positiveButtonText ?: -1,
+                                event.positionButtonAction
+                            )
+                            .setIcon(R.drawable.icn_error)
+                            .show()
+                    }
+                }
+            }
+            ?.launchIn(lifecycleScope)
+    }
+
     private fun checkHasBottomNavVisibility() {
         _act?.isShowBottomNav(isShowBottomNavigation())
     }
@@ -64,7 +118,7 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
         positiveButtonText: String? = null,
         positiveButtonAction: ((v: View) -> Unit)? = null,
         negativeButtonText: String? = null,
-        negativeButtonAction: ((v: View) -> Unit)? = null
+        negativeButtonAction: ((v: View) -> Unit)? = null,
     ) {
         ActionDialog.Builder(requireContext(), childFragmentManager)
             .setLabel(title)

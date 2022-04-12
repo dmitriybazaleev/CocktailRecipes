@@ -10,21 +10,18 @@ import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.api.INGREDIENTS
 import com.baza.cocktailrecipe.presentation.module.data.entity.IngredientEntity
 import com.baza.cocktailrecipe.presentation.module.domain.SearchByIngredientUseCase
+import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
 import com.baza.cocktailrecipe.presentation.module.ui.event.SearchIngredientEvent
+import com.baza.cocktailrecipe.presentation.module.ui.fromJsonArray
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toIngredientEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toSearchType
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.DrinkUiEntitySearch
 import com.baza.cocktailrecipe.presentation.module.ui.state.SearchIngredientState
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 class SearchByIngredientViewModel : BaseViewModel() {
@@ -65,16 +62,19 @@ class SearchByIngredientViewModel : BaseViewModel() {
                 searchInput,
                 onSuccess = { response ->
                     if (!response.get(INGREDIENTS).isJsonNull) {
-                        val listResult = Gson().fromJson<List<IngredientEntity>>(
-                            response.getAsJsonArray(INGREDIENTS),
-                            object : TypeToken<List<IngredientEntity>>() {}.type
-                        )
-                        Log.d(TAG, "ingredient list result: $listResult")
-                        setListIngredientState(
-                            listResult,
-                            R.string.search_result,
-                            false
-                        )
+                        Log.d(TAG, "ingredients response: $response")
+                        val listResult = response.fromJsonArray<IngredientEntity>(INGREDIENTS)
+                        Log.d(TAG, "list result size: ${listResult?.size}")
+                        listResult?.let {
+                            Log.d(TAG, "from json is success!")
+                            setListIngredientState(
+                                it,
+                                R.string.search_result,
+                                false
+                            )
+                        } ?: run {
+                            Log.d(TAG, "from json is unsuccessful!")
+                        }
 
                     } else {
                         Log.d(TAG, "ingredient result is empty!")
@@ -91,7 +91,7 @@ class SearchByIngredientViewModel : BaseViewModel() {
                     updateUiAsync()
 
                     withContext(Dispatchers.Main) {
-                        onHandleException(e)
+                        showErrorDialogByException(e)
                     }
                 }
             )
@@ -153,10 +153,6 @@ class SearchByIngredientViewModel : BaseViewModel() {
                 },
                 onError = { e ->
                     e.printStackTrace()
-
-                    withContext(Dispatchers.Main) {
-                        onHandleException(e)
-                    }
                 }
             )
         }
@@ -166,7 +162,7 @@ class SearchByIngredientViewModel : BaseViewModel() {
      * Данный метод будет добавлять выбранный ингредиент из списка
      * @param item - Выбранный элемент Entity
      */
-    fun insertIngredient(item: IngredientEntity, itemPosition: Int) {
+    fun insertIngredient(item: IngredientEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d(TAG, "clicked item: $item")
             ingredientUseCase.onInsertIngredient(
@@ -188,10 +184,6 @@ class SearchByIngredientViewModel : BaseViewModel() {
                 },
                 onError = { e ->
                     e.printStackTrace()
-
-                    withContext(Dispatchers.Main) {
-                        onHandleException(e)
-                    }
                 }
             )
         }
@@ -236,23 +228,16 @@ class SearchByIngredientViewModel : BaseViewModel() {
                     e.printStackTrace()
 
                     withContext(Dispatchers.Main) {
-                        onHandleException(e)
+                        emitBaseEvent(
+                            BaseEvent.ActionDialogEventRes(
+                                title = R.string.error,
+                                message = R.string.something_went_wrong,
+                                negativeButtonText = R.string.ok
+                            )
+                        )
                     }
                 }
             )
-        }
-    }
-
-    private suspend fun onHandleException(e: Exception) {
-        when (e) {
-            is UnknownHostException -> {
-            }
-            is HttpException -> {
-
-            }
-            is SocketTimeoutException -> {
-
-            }
         }
     }
 

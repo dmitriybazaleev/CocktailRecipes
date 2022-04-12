@@ -17,11 +17,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import retrofit2.HttpException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
+// TODO: 12.04.2022 Переделать логику!!
 class HomeViewModel : BaseViewModel() {
 
     private val _homeLiveData = MutableLiveData<HomeState>()
@@ -81,7 +79,7 @@ class HomeViewModel : BaseViewModel() {
                 e.printStackTrace()
 
                 withContext(Dispatchers.Main) {
-                    onHandleError(e)
+
                 }
 
             } finally {
@@ -100,30 +98,6 @@ class HomeViewModel : BaseViewModel() {
 
     private suspend fun emitEvent(homeEvent: HomeEvent) {
         _mHomeEvent.emit(homeEvent)
-    }
-
-
-    private suspend fun onHandleError(e: Exception) {
-        when (e) {
-            is HttpException -> {
-                Log.d(TAG, "http exception! code: ${e.code()}, message: ${e.message}")
-            }
-            is UnknownHostException -> {
-                emitEvent(
-                    HomeEvent.NetworkError(
-                        "Ошибка", "Проверьте подключение интернета!"
-                    )
-                )
-            }
-            is SocketTimeoutException -> {
-                emitEvent(
-                    HomeEvent.NetworkError(
-                        "Ошибка",
-                        "Попробуйте попытку позже"
-                    )
-                )
-            }
-        }
     }
 
     private fun setProgressState(isShow: Boolean) {

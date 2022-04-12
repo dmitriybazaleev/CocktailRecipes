@@ -10,6 +10,7 @@ import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
 import com.baza.cocktailrecipe.presentation.module.domain.SelectLanguageUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toLanguageUiEntity
 import com.baza.cocktailrecipe.presentation.module.data.entity.LanguageEntity
+import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
 import com.baza.cocktailrecipe.presentation.module.ui.event.SelectLanguageEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LanguageUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SelectLanguageState
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SelectLanguageViewModel : ViewModel() {
+class SelectLanguageViewModel : BaseViewModel() {
 
     private val _selectLanguagesLiveData = MutableLiveData<SelectLanguageState>()
     private val mSelectLanguagesState = SelectLanguageState()
@@ -75,10 +76,6 @@ class SelectLanguageViewModel : ViewModel() {
                 },
                 onError = { e ->
                     e.printStackTrace()
-
-                    withContext(Dispatchers.Main) {
-
-                    }
                 }
             )
         }

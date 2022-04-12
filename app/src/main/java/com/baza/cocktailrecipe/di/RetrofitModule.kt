@@ -32,6 +32,9 @@ class RetrofitModule {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(object : Converter.Factory() {
+                /**
+                 * В данной Api не очень удобно использовать GsonConverterFactory
+                 */
                 override fun responseBodyConverter(
                     type: Type,
                     annotations: Array<Annotation>,

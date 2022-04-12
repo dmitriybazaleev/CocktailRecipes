@@ -44,6 +44,7 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpWithBaseViewModel(viewModel)
         initStateObserver()
         initEventObserver()
         setUpWithRecycler()
@@ -130,7 +131,7 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
             showFullCocktailInfoDialog(selectedIngredientEntity)
 
         } else {
-            viewModel.insertIngredient(selectedIngredientEntity, itemPosition)
+            viewModel.insertIngredient(selectedIngredientEntity)
         }
     }
 }

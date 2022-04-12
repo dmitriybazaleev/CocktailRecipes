@@ -29,6 +29,7 @@ class SelectLanguageFragment : BaseFragment<FragmentSelectLanguageBinding>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpWithBaseViewModel(viewModel)
         setUpRecycler()
         initObserver()
         observeViewEvent()
