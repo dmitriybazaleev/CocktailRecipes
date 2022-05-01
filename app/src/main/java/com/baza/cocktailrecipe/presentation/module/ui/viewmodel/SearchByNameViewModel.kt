@@ -55,7 +55,6 @@ class SearchByNameViewModel : BaseViewModel() {
         const val TAG = "searchByName"
     }
 
-
     /**
      * Данный метод ищет все подходящее коктейли
      */
@@ -105,6 +104,9 @@ class SearchByNameViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * Данный метод возвращает список сохраненных коктейлей из Room
+     */
     private fun getSavedCocktailsDatabase() {
         onClearState()
         viewModelScope.launch(Dispatchers.IO) {

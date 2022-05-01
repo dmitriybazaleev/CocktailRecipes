@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.AnimRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -40,7 +39,7 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
     protected val act: MainActivity?
         get() = _act
 
-    private var baseViewModel: BaseViewModel? = null
+    private var viewModel: BaseViewModel? = null
 
 
     override fun onAttach(context: Context) {
@@ -64,13 +63,13 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), BackPressedHandler {
     }
 
     protected fun setUpWithBaseViewModel(vm: BaseViewModel) {
-        this.baseViewModel = vm
+        this.viewModel = vm
 
         initBaseEvent()
     }
 
     private fun initBaseEvent() {
-        baseViewModel?.baseEvent
+        viewModel?.baseEvent
             ?.onEach { event ->
                 when (event) {
                     is BaseEvent.ActionDialogEvent -> {

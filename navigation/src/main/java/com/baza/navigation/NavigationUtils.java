@@ -49,7 +49,7 @@ public final class NavigationUtils {
                             @NonNull NavController controller,
                             @NonNull NavDestination destination, @Nullable Bundle arguments) {
                         Log.d(TAG, "destination changed: " + destination.getId());
-                        BottomNavigationView view = weakReference.get();
+                        final BottomNavigationView view = weakReference.get();
                         if (view == null) {
                             controller.removeOnDestinationChangedListener(this);
                             return;
@@ -78,7 +78,7 @@ public final class NavigationUtils {
             @NonNull MenuItem item,
             @NonNull NavController navController
     ) {
-        NavOptions.Builder builder = new NavOptions.Builder()
+        final NavOptions.Builder builder = new NavOptions.Builder()
                 .setLaunchSingleTop(true);
         if (navController.getCurrentDestination().getParent().findNode(item.getItemId())
                 instanceof ActivityNavigator.Destination) {
@@ -97,7 +97,7 @@ public final class NavigationUtils {
             builder.setPopUpTo(findStartDestination(
                     navController.getGraph()).getId(), false);
         }
-        NavOptions options = builder.build();
+        final NavOptions options = builder.build();
         try {
             navController.navigate(item.getItemId(), null, options);
             return true;

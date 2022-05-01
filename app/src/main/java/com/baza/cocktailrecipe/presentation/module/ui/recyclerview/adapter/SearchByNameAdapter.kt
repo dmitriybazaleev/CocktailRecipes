@@ -243,7 +243,6 @@ class SearchByNameAdapter constructor(
         AsyncListDiffer(this, searchDiffCallback)
     private var mItemTouchHelper: ItemTouchHelper? = null
 
-
     override fun getItemViewType(position: Int): Int =
         mSearchAsyncDiffer.currentList[position].getViewType().ordinal
 

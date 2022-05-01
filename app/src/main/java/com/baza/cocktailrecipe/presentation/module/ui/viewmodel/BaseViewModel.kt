@@ -3,24 +3,29 @@ package com.baza.cocktailrecipe.presentation.module.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import retrofit2.HttpException
-import java.lang.Exception
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
+/**
+ * Базовый класс для ViewModel
+ * Данный класс содержит методы, для работы с базовыми эвентами:
+ * 1 - Отправить простой эвент в
+ * [com.baza.cocktailrecipe.presentation.module.ui.fragments.BaseFragment]
+ * 2 - Возможность излучать любой эвент, котрый есть в
+ * [com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent]
+ */
 abstract class BaseViewModel : ViewModel() {
 
     private val _baseEvent = MutableSharedFlow<BaseEvent>()
 
     /**
-     * Данный метод отправляет реактивный эвент в Базовый фрагмент
-     * Если сервер отдал ошибку и эвент будет показывать
-     * [com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog]
+     * Метод проверяет возможные ошибки, которые могли произойти при запросе.
+     * При определенной ошибки метод отправляет реактивный эвент, который подписался
+     * [com.baza.cocktailrecipe.presentation.module.ui.fragments.BaseFragment]
+     * @param t - Ошибка, который выкинул OkHttp
      */
     suspend fun showErrorDialogByException(t: Throwable) {
         when (t) {
@@ -54,9 +59,11 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
+
     /**
-     * Данный метод излучает эвент в
+     * Данный метод может отправлять реактивный event в
      * [com.baza.cocktailrecipe.presentation.module.ui.fragments.BaseFragment]
+     * @param baseEvent - Параметр базового эвента
      */
     suspend fun emitBaseEvent(baseEvent: BaseEvent) {
         _baseEvent.emit(baseEvent)

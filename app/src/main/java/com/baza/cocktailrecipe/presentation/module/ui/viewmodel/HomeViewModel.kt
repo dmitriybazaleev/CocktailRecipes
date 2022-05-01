@@ -10,7 +10,6 @@ import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.TAG
-import com.baza.cocktailrecipe.presentation.module.ui.getGeneratedLetter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRecommendationEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.HomeState
 import com.google.gson.Gson
@@ -32,7 +31,6 @@ class HomeViewModel : BaseViewModel() {
 
     init {
         App.appComponent?.inject(this)
-        getCocktails(false)
     }
 
 
@@ -49,7 +47,7 @@ class HomeViewModel : BaseViewModel() {
             try {
                 val randomList = homeUseCase.getRandomCocktail()
                 val byLetterList =
-                    homeUseCase.getCocktailsByLetter(getGeneratedLetter())
+                    homeUseCase.getCocktailsByLetter("a")
 
                 if (!randomList.get(DRINKS).isJsonNull && !byLetterList.get(DRINKS).isJsonNull) {
                     val randomCocktails = Gson().fromJson<List<DrinkEntity>>(

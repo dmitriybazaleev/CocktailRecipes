@@ -13,14 +13,14 @@ class UseCaseModule {
 
     @Provides
     fun provideHomeUseCase(
-        api: CocktailApi
-    ): HomeUseCase = HomeUseCase(api)
+        cocktailApi: CocktailApi
+    ): HomeUseCase = HomeUseCase(cocktailApi)
 
     @Provides
     fun provideSearchByNameUseCase(
-        api: CocktailApi,
-        dao: DrinksDao
-    ): SearchByNameUseCase = SearchByNameUseCase(api, dao)
+        cocktailApi: CocktailApi,
+        drinksDao: DrinksDao
+    ): SearchByNameUseCase = SearchByNameUseCase(cocktailApi, drinksDao)
 
 
     @Provides
@@ -31,12 +31,12 @@ class UseCaseModule {
 
     @Provides
     fun provideIngredientUseCase(
-        api: CocktailApi,
-        dao: IngredientDao
-    ): SearchByIngredientUseCase = SearchByIngredientUseCase(api, dao)
+        cocktailApi: CocktailApi,
+        ingredientDao: IngredientDao
+    ): SearchByIngredientUseCase = SearchByIngredientUseCase(cocktailApi, ingredientDao)
 
     @Provides
     fun provideSelectLanguagesUseCase(
-        appContext: Context
-    ) = SelectLanguageUseCase(appContext)
+        app: Context
+    ) = SelectLanguageUseCase(app)
 }

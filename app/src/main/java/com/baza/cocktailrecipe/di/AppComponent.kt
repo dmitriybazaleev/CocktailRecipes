@@ -1,5 +1,6 @@
 package com.baza.cocktailrecipe.di
 
+import com.baza.cocktailrecipe.di.navigation.ActivityComponent
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.*
 import dagger.Component
 import javax.inject.Singleton
@@ -15,6 +16,9 @@ import javax.inject.Singleton
 )
 @Singleton
 interface AppComponent {
+
+    fun activityComponentBuilder(): ActivityComponent.ActivityBuilder
+
     fun inject(homeViewModel: HomeViewModel)
     fun inject(searchByNameViewModel: SearchByNameViewModel)
     fun inject(savedViewModel: SavedViewModel)

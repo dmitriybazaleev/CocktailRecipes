@@ -25,7 +25,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
 
     private val viewModel by viewModels<SearchByNameViewModel>()
 
-    private val mSearchAdapter = SearchByNameAdapter(this)
+    private var mSearchAdapter: SearchByNameAdapter? = null
     private var mJob: Job? = null
 
     companion object {
@@ -62,9 +62,10 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     }
 
     private fun setUpRecycler() {
+        mSearchAdapter = SearchByNameAdapter(this)
         binding?.rvSearchByName?.adapter = mSearchAdapter
 
-        mSearchAdapter.attachItemTouch(binding?.rvSearchByName) { item, holder ->
+        mSearchAdapter?.attachItemTouch(binding?.rvSearchByName) { item, holder ->
             viewModel.onRemoveItem(item, holder.adapterPosition)
         }
     }
@@ -72,7 +73,7 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
     private fun addStateObserver() {
         viewModel.searchByNameLiveData.observe(viewLifecycleOwner) { state ->
             updateProgress(state.isShowProgress)
-            mSearchAdapter.updateList(state.searchResult)
+            mSearchAdapter?.updateList(state.searchResult)
             updatePlaceholder(state.isShowPlaceholder)
         }
     }

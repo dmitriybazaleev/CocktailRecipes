@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class SearchByNameUseCase @Inject constructor(
     private val mApi: CocktailApi,
-    private val mDao: DrinksDao
+    private val mDao: DrinksDao 
 ) {
 
     suspend fun onSearchCocktail(

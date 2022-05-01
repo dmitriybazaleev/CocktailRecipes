@@ -14,13 +14,13 @@ class DataBaseModule {
 
     @Provides
     fun provideDrinksDao(
-        creator: RoomCreator
-    ): DrinksDao = creator.getDrinkDao()
+        room: RoomCreator
+    ): DrinksDao = room.getDrinkDao()
 
     @Provides
     fun provideIngredientDao(
-        creator: RoomCreator
-    ) : IngredientDao = creator.getIngredientsDao()
+        room: RoomCreator
+    ) : IngredientDao = room.getIngredientsDao()
 
 
     @Provides

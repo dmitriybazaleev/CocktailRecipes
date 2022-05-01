@@ -9,13 +9,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.FragmentHomeBinding
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.ui.blur.BlurHelper
-import com.baza.cocktailrecipe.presentation.module.ui.dialog.ActionDialog
 import com.baza.cocktailrecipe.presentation.module.ui.dialog.FullCocktailInfoDialog
-import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RandomCocktailAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.RecommendationAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.RecommendationUiEntity
@@ -87,16 +84,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     private fun observeEvent() {
         eventJob = viewModel.homeEvent
             .onEach { event ->
-                when (event) {
-                    is HomeEvent.NetworkError -> {
-                        ActionDialog.Builder(requireContext(), childFragmentManager)
-                            .setLabel(event.title)
-                            .setMessage(event.message)
-                            .setNegativeButton(R.string.ok)
-                            .setIcon(R.drawable.icn_error)
-                            .show()
-                    }
-                }
             }
             .launchIn(lifecycleScope)
     }
@@ -106,7 +93,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(),
     }
 
     override fun onRefresh() {
-        viewModel.getCocktails(true)
     }
 
     override fun onRecommendationItemClicked(entity: RecommendationUiEntity) {

@@ -4,11 +4,13 @@ import android.app.Application
 import com.baza.cocktailrecipe.di.AppComponent
 import com.baza.cocktailrecipe.di.AppModule
 import com.baza.cocktailrecipe.di.DaggerAppComponent
+import com.baza.cocktailrecipe.di.navigation.ActivityComponent
 
 class App : Application() {
 
     companion object {
         var appComponent: AppComponent? = null
+        var activityComponent: ActivityComponent? = null
         lateinit var app: App
     }
 

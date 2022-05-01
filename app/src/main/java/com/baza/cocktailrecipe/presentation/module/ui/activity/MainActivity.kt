@@ -9,11 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.ActivityMainBinding
+import com.baza.cocktailrecipe.di.navigation.FragmentModule
+import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
 import com.baza.cocktailrecipe.presentation.module.ui.setAppLanguage
-import com.baza.navigation.NavigationController
 import com.baza.navigation.Navigator
 import com.baza.navigation.attachController
+import javax.inject.Inject
 
 /**
  * Тестовое приложение, которое представляет функционал:
@@ -25,18 +27,27 @@ import com.baza.navigation.attachController
  */
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    var navigator: Navigator? = null
+    @Inject
+    lateinit var navigator: Navigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createComponent()
         createNavigation()
         initLightStatusBar()
         updateAppLanguage()
     }
 
+    private fun createComponent() {
+        App.activityComponent = App.appComponent?.activityComponentBuilder()
+            ?.setFragmentModule(FragmentModule(this))
+            ?.build()
+
+        App.activityComponent?.inject(this)
+    }
+
     private fun createNavigation() {
-        navigator = NavigationController(supportFragmentManager, R.id.fcv_main)
-        binding?.bnvMain?.attachController(navController = navigator?.getController())
+        binding?.bnvMain?.attachController(navController = navigator.getController())
     }
 
     private fun updateAppLanguage() = setAppLanguage(PreferencesCache.language)
@@ -62,6 +73,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             window.navigationBarColor = Color.WHITE
             window.statusBarColor = Color.WHITE
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        App.activityComponent = null
     }
 
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding

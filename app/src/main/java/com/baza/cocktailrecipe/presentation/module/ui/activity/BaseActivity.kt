@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.baza.cocktailrecipe.presentation.base.App
 
 abstract class BaseActivity<B : ViewBinding> : AppCompatActivity() {
 
     private var _binding: B? = null
+    protected val app = application as? App
 
     protected val binding: B?
         get() = _binding
