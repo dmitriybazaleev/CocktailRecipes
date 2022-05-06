@@ -1,9 +1,6 @@
-package com.baza.cocktailrecipe.presentation.module.ui
+package com.baza.cocktailrecipe.presentation.module.ui.activity
 
 import android.app.Activity
-import android.content.Context
-import com.baza.cocktailrecipe.R
-import java.io.*
 import java.util.*
 
 fun Activity.setAppLanguage(code: String?) {

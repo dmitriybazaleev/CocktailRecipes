@@ -10,7 +10,6 @@ class App : Application() {
 
     companion object {
         var appComponent: AppComponent? = null
-        var activityComponent: ActivityComponent? = null
         lateinit var app: App
     }
 

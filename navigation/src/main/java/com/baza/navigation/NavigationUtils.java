@@ -1,6 +1,7 @@
 package com.baza.navigation;
 
 import androidx.annotation.NonNull;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,9 +19,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.lang.ref.WeakReference;
 
+
+@Deprecated
 public final class NavigationUtils {
 
     public static final String TAG = "navUtils";
+
+    private NavigationUtils() {
+    }
 
     /**
      * Настраивает {@link BottomNavigationView} для использования с {@link NavController}. Это вызовет
@@ -80,31 +86,38 @@ public final class NavigationUtils {
     ) {
         final NavOptions.Builder builder = new NavOptions.Builder()
                 .setLaunchSingleTop(true);
-        if (navController.getCurrentDestination().getParent().findNode(item.getItemId())
-                instanceof ActivityNavigator.Destination) {
-            builder.setEnterAnim(R.anim.nav_default_enter_anim)
-                    .setExitAnim(R.anim.nav_default_exit_anim)
-                    .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
-                    .setPopExitAnim(R.anim.nav_default_pop_exit_anim);
+        if (navController.getCurrentDestination() != null
+                && navController.getCurrentDestination().getParent() != null) {
+            final NavDestination destination =
+                    navController.getCurrentDestination().getParent().findNode(item.getItemId());
 
-        } else {
-            builder.setEnterAnim(R.animator.nav_default_enter_anim)
-                    .setExitAnim(R.animator.nav_default_exit_anim)
-                    .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
-                    .setPopExitAnim(R.animator.nav_default_pop_exit_anim);
-        }
-        if ((item.getOrder() & Menu.CATEGORY_SECONDARY) == 0) {
-            builder.setPopUpTo(findStartDestination(
-                    navController.getGraph()).getId(), false);
-        }
-        final NavOptions options = builder.build();
-        try {
-            navController.navigate(item.getItemId(), null, options);
-            return true;
+            if (destination instanceof ActivityNavigator.Destination) {
+                builder.setEnterAnim(R.anim.nav_default_enter_anim)
+                        .setExitAnim(R.anim.nav_default_exit_anim)
+                        .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
+                        .setPopExitAnim(R.anim.nav_default_pop_exit_anim);
 
-        } catch (IllegalArgumentException e) {
-            return false;
+            } else {
+                builder.setEnterAnim(R.animator.nav_default_enter_anim)
+                        .setExitAnim(R.animator.nav_default_exit_anim)
+                        .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
+                        .setPopExitAnim(R.animator.nav_default_pop_exit_anim);
+            }
+            if ((item.getOrder() & Menu.CATEGORY_SECONDARY) == 0) {
+                builder.setPopUpTo(findStartDestination(
+                        navController.getGraph()).getId(), false);
+            }
+            final NavOptions options = builder.build();
+            try {
+                navController.navigate(item.getItemId(), null, options);
+                return true;
+
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
         }
+
+        return false;
     }
 
     /**
@@ -116,7 +129,7 @@ public final class NavigationUtils {
         NavDestination startDestination = graph;
         while (startDestination instanceof NavGraph) {
             NavGraph parent = (NavGraph) startDestination;
-            startDestination = parent.findNode(parent.getStartDestination());
+            startDestination = parent.findNode(parent.getStartDestinationId());
         }
         return startDestination;
     }

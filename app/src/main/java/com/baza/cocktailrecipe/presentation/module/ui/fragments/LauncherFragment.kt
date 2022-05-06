@@ -8,9 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.baza.cocktailrecipe.databinding.FragmentLauncherBinding
-import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
 import com.baza.cocktailrecipe.presentation.module.ui.event.LauncherEvent
-import com.baza.cocktailrecipe.presentation.module.ui.setAppLanguage
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.LauncherViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -59,6 +57,8 @@ class LauncherFragment : BaseFragment<FragmentLauncherBinding>() {
         super.onDestroyView()
         jobEvent?.cancel()
     }
+
+    override fun onBackPressed(): Boolean = true
 
     override fun isShowBottomNavigation(): Boolean = false
 }

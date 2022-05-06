@@ -8,12 +8,12 @@ import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.api.DRINKS
 import com.baza.cocktailrecipe.presentation.module.data.entity.DrinkEntity
 import com.baza.cocktailrecipe.presentation.module.domain.HomeUseCase
+import com.baza.cocktailrecipe.presentation.module.ui.Helper
 import com.baza.cocktailrecipe.presentation.module.ui.event.HomeEvent
 import com.baza.cocktailrecipe.presentation.module.ui.fragments.TAG
+import com.baza.cocktailrecipe.presentation.module.ui.fromJsonArray
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toRecommendationEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.HomeState
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -31,6 +31,7 @@ class HomeViewModel : BaseViewModel() {
 
     init {
         App.appComponent?.inject(this)
+//        getCocktails(false)
     }
 
 
@@ -47,26 +48,21 @@ class HomeViewModel : BaseViewModel() {
             try {
                 val randomList = homeUseCase.getRandomCocktail()
                 val byLetterList =
-                    homeUseCase.getCocktailsByLetter("a")
+                    homeUseCase.getCocktailsByLetter(Helper.getGeneratedString())
 
                 if (!randomList.get(DRINKS).isJsonNull && !byLetterList.get(DRINKS).isJsonNull) {
-                    val randomCocktails = Gson().fromJson<List<DrinkEntity>>(
-                        byLetterList.getAsJsonArray(DRINKS),
-                        object : TypeToken<List<DrinkEntity>>() {}.type
-                    )
+                      val randomCocktails = byLetterList.fromJsonArray<DrinkEntity>(DRINKS)
 
                     /**
                      * Т.к сервер отправляет рандомный коктейль массивом
                      * Берем 0 индекс
                      */
-                    val randomCocktailList = Gson().fromJson<DrinkEntity>(
-                        randomList.getAsJsonArray(DRINKS).get(0),
-                        object : TypeToken<DrinkEntity>() {}.type
-                    )
+                    val randomCocktail = randomList.fromJsonArray<DrinkEntity>(DRINKS)?.get(0)
+
                     Log.d(TAG, "Current recommendation list: ${mHomeState.recommendationsList}")
-                    mHomeState.randomList = randomCocktails
+                    mHomeState.randomList = randomCocktails ?: return@launch
                     mHomeState.recommendationsList = randomCocktails.toRecommendationEntity()
-                    mHomeState.randomDrink = randomCocktailList
+                    mHomeState.randomDrink = randomCocktail
 
                 } else {
                     Log.d(TAG, "response is unsuccessful")

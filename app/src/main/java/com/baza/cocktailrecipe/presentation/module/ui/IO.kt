@@ -18,6 +18,17 @@ inline fun <reified T> JsonObject.fromJsonArray(header: String): List<T>? {
     }
 }
 
+inline fun <reified T> Gson.fromJsonArrayStr(jsonStr: String) : List<T>? {
+    return try {
+        this.fromJson<List<T>>(
+            jsonStr,
+            object : TypeToken<List<T>>() {}.type
+        )
+
+    } catch (e: Exception) {
+        null
+    }
+}
 
 inline fun <reified T> JsonObject.fromJsonObject(header: String): T? {
     return try {

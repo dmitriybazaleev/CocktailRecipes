@@ -3,25 +3,22 @@ package com.baza.cocktailrecipe.presentation.module.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
 import com.baza.cocktailrecipe.presentation.module.domain.SelectLanguageUseCase
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.toLanguageUiEntity
 import com.baza.cocktailrecipe.presentation.module.data.entity.LanguageEntity
-import com.baza.cocktailrecipe.presentation.module.ui.event.BaseEvent
 import com.baza.cocktailrecipe.presentation.module.ui.event.SelectLanguageEvent
+import com.baza.cocktailrecipe.presentation.module.ui.fromJsonArrayStr
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LanguageUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.state.SelectLanguageState
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectLanguageViewModel : BaseViewModel() {
@@ -54,13 +51,10 @@ class SelectLanguageViewModel : BaseViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             selectLanguagesUseCase.getLanguagesStr(
                 onSuccess = { strJson ->
-                    val listLanguages: List<LanguageEntity> = Gson().fromJson(
-                        strJson,
-                        object : TypeToken<List<LanguageEntity>>() {}.type
-                    )
+                    val listLanguages = Gson().fromJsonArrayStr<LanguageEntity>(strJson)
                     Log.d(TAG, "Available languages: $listLanguages")
 
-                    listLanguages.forEachIndexed { index, entity ->
+                    listLanguages?.forEachIndexed { index, entity ->
                         val isCurrentCode = entity.code == mCurrentLanguage
                         if (isCurrentCode) {
                             currentSelectedPosition = index

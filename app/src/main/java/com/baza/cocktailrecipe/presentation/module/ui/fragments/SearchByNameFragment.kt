@@ -127,6 +127,16 @@ class SearchByNameFragment : BaseFragment<FragmentSearchByNameBinding>(),
         mJob?.cancel()
     }
 
+    override fun onDestroyView() {
+        disposeAdapter()
+        super.onDestroyView()
+    }
+
+    private fun disposeAdapter() {
+        mSearchAdapter = null
+        binding?.rvSearchByName?.adapter = null
+    }
+
     override fun onItemClicked(item: DrinkUiEntitySearch, itemPosition: Int) {
         if (item.isSavedList) {
             /**

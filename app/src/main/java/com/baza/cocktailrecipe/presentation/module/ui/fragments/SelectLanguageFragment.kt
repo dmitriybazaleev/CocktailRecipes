@@ -10,7 +10,7 @@ import com.baza.cocktailrecipe.databinding.FragmentSelectLanguageBinding
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.adapter.LanguagesAdapter
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.entity.LanguageUiEntity
 import com.baza.cocktailrecipe.presentation.module.ui.recyclerview.holder.LanguageHolder
-import com.baza.cocktailrecipe.presentation.module.ui.setAppLanguage
+import com.baza.cocktailrecipe.presentation.module.ui.activity.setAppLanguage
 import com.baza.cocktailrecipe.presentation.module.ui.viewmodel.SelectLanguageViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

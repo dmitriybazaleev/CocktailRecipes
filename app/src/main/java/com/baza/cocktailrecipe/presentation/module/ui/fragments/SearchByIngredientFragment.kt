@@ -28,7 +28,7 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
     private val viewModel by viewModels<SearchByIngredientViewModel>()
     private var mJobInput: Job? = null
 
-    private val mAdapter = SearchByNameAdapter(this)
+    private var mAdapter: SearchByNameAdapter? = null
 
     companion object {
 
@@ -58,9 +58,10 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
     }
 
     private fun setUpWithRecycler() {
+        mAdapter = SearchByNameAdapter(this)
         binding?.rvSearchByIngredient?.adapter = mAdapter
 
-        mAdapter.attachItemTouch(binding?.rvSearchByIngredient) { item, _ ->
+        mAdapter?.attachItemTouch(binding?.rvSearchByIngredient) { item, _ ->
             viewModel.onRemoveIngredient(item)
         }
     }
@@ -121,8 +122,18 @@ class SearchByIngredientFragment : BaseFragment<FragmentSearchByIngredientBindin
         viewModel.searchIngredientLiveData.observe(viewLifecycleOwner) { state ->
             updatePlaceholderState(state.isShowPlaceholder)
             updateProgressState(state.isShowProgress)
-            mAdapter.updateList(state.searchResult)
+            mAdapter?.updateList(state.searchResult)
         }
+    }
+
+    override fun onDestroyView() {
+        disposeAdapter()
+        super.onDestroyView()
+    }
+
+    private fun disposeAdapter() {
+        mAdapter = null
+        binding?.rvSearchByIngredient?.adapter = null
     }
 
     override fun onItemClicked(item: DrinkUiEntitySearch, itemPosition: Int) {

@@ -9,10 +9,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.baza.cocktailrecipe.R
 import com.baza.cocktailrecipe.databinding.ActivityMainBinding
+import com.baza.cocktailrecipe.di.navigation.ActivityComponent
 import com.baza.cocktailrecipe.di.navigation.FragmentModule
 import com.baza.cocktailrecipe.presentation.base.App
 import com.baza.cocktailrecipe.presentation.module.data.PreferencesCache
-import com.baza.cocktailrecipe.presentation.module.ui.setAppLanguage
+import com.baza.cocktailrecipe.presentation.module.ui.fragments.BaseFragment
 import com.baza.navigation.Navigator
 import com.baza.navigation.attachController
 import javax.inject.Inject
@@ -27,6 +28,8 @@ import javax.inject.Inject
  */
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
+    var actSubcomponent: ActivityComponent? = null
+
     @Inject
     lateinit var navigator: Navigator
 
@@ -39,11 +42,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
     private fun createComponent() {
-        App.activityComponent = App.appComponent?.activityComponentBuilder()
+        actSubcomponent = App.appComponent?.activityComponentBuilder()
             ?.setFragmentModule(FragmentModule(this))
             ?.build()
 
-        App.activityComponent?.inject(this)
+        actSubcomponent?.inject(this)
     }
 
     private fun createNavigation() {
@@ -77,7 +80,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        App.activityComponent = null
+        actSubcomponent = null
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = navigator.getCurrentFragment()
+        var handledBackPressed = false
+        if (currentFragment is BaseFragment<*>) {
+            handledBackPressed = currentFragment.onBackPressed()
+        }
+
+        if (!handledBackPressed) {
+            super.onBackPressed()
+        }
     }
 
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding

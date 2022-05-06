@@ -2,7 +2,9 @@ package com.baza.navigation
 
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.AnimRes
 import androidx.annotation.IdRes
+import androidx.annotation.MainThread
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -23,32 +25,30 @@ class NavigationController(
     private var navHostFragment: NavHostFragment? = null
 
     init {
-        initBase()
+        create()
     }
 
-    private fun initBase() {
+    private fun create() {
         navHostFragment = fm.findFragmentById(navHostFragmentId) as? NavHostFragment
         navHostFragment?.let { hostFragment ->
             navController = hostFragment.navController
         }
     }
 
-    override fun addFragment(destinationId: Int) {
+    override fun addFragment(@IdRes destinationId: Int) {
         navController?.navigate(destinationId)
     }
 
-    override fun addFragment(destinationId: Int, vararg args: NavArguments) {
-        val currentArgument = getArgument(*args)
-
-        navController?.navigate(destinationId, currentArgument)
+    override fun addFragment(@IdRes destinationId: Int, vararg args: NavArguments) {
+        navController?.navigate(destinationId, getArgument(*args))
     }
 
     override fun addFragment(
-        destinationId: Int,
-        enterAnim: Int,
-        exitAnim: Int,
-        popEnterAnim: Int,
-        popExitAnim: Int
+        @IdRes destinationId: Int,
+        @AnimRes enterAnim: Int,
+        @AnimRes exitAnim: Int,
+        @AnimRes popEnterAnim: Int,
+        @AnimRes popExitAnim: Int
     ) {
         val navOption = navOptions {
             anim {
@@ -63,15 +63,13 @@ class NavigationController(
     }
 
     override fun addFragment(
-        destinationId: Int,
-        enterAnim: Int,
-        exitAnim: Int,
-        popEnterAnim: Int,
-        popExitAnim: Int,
+        @IdRes destinationId: Int,
+        @AnimRes enterAnim: Int,
+        @AnimRes exitAnim: Int,
+        @AnimRes popEnterAnim: Int,
+        @AnimRes popExitAnim: Int,
         vararg args: NavArguments
     ) {
-
-
         val navOption = navOptions {
             anim {
                 enter = enterAnim
@@ -94,23 +92,16 @@ class NavigationController(
         val newList = mutableListOf<Pair<String, Any>>()
 
         navArguments.forEach { argument ->
-            d("Current argument: $argument")
+            Log.d(TAG, "Current argument: $argument")
             newList.add(Pair(argument.key, argument.data))
         }
 
         return bundleOf(*newList.toTypedArray())
     }
 
-    private fun d(message: String?) {
-        message?.let { messageStr ->
-            Log.d(TAG, messageStr)
-        }
-    }
-
     override fun getController(): NavController? = navController
 
     override fun getCurrentFragment(): Fragment? =
         navHostFragment?.childFragmentManager?.fragments?.get(0)
-
 
 }
